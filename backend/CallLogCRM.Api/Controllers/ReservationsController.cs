@@ -25,7 +25,7 @@ public class ReservationsController(AppDbContext db) : ControllerBase
 
         var reservations = await db.CallReservations
             .Where(r => r.AssignedUserId == userId)
-            .OrderBy(r => r.AppointmentDate)
+            .OrderByDescending(r => r.AppointmentDate)
             .AsNoTracking()
             .ToListAsync();
 

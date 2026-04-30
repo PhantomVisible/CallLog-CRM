@@ -1,48 +1,63 @@
 @inherits LayoutComponentBase
 @inject ApiService Api
 @inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Nav
 
-<CascadingAuthenticationState>
+@* CascadingAuthenticationState lives in Routes.razor — do NOT add it here. *@
+
 <div class="layout-wrapper">
     <header class="app-header d-flex justify-content-between align-items-center">
         <a href="/" class="header-brand">CallLog CRM</a>
 
         <AuthorizeView>
+
+            @* ── Logged in ─────────────────────────────────── *@
             <Authorized>
                 <div class="identity-area d-flex align-items-center gap-2">
-                    <span class="identity-name">@context.User.Identity?.Name</span>
-                    <button class="btn btn-sm btn-outline-light" @onclick="HandleLogout">
+                    <span class="identity-name">
+                        Bonjour, <strong>@context.User.Identity?.Name</strong>
+                    </span>
+                    <button class="btn btn-sm btn-outline-light" @onclick="HandleLogout"
+                            disabled="@_loading">
                         Déconnexion
                     </button>
                 </div>
             </Authorized>
 
+            @* ── Not logged in ────────────────────────────── *@
             <NotAuthorized>
-                <div class="identity-area position-relative">
+                <div class="identity-area">
+
+                    @* Trigger button *@
                     <button class="btn btn-sm btn-outline-light"
-                            @onclick="ToggleDropdown">
-                        Vous êtes qui ?
+                            @onclick="ToggleDropdown"
+                            aria-expanded="@_showDropdown">
+                        @(_showDropdown ? "✕ Fermer" : "Vous êtes qui ?")
                     </button>
 
+                    @* Dropdown panel *@
                     @if (_showDropdown)
                     {
                         <div class="identity-dropdown">
+                            <div class="identity-dropdown-header">Sélectionnez votre nom</div>
+
                             @foreach (var closer in _closers)
                             {
+                                var name = closer; @* capture for lambda *@
                                 <button class="identity-option"
                                         disabled="@_loading"
-                                        @onclick="() => SelectCloser(closer)">
+                                        @onclick="() => SelectCloser(name)">
                                     @closer
                                 </button>
                             }
 
-                            <hr class="dropdown-divider" />
+                            <hr class="dropdown-divider my-1" />
 
                             @if (!_showAdminInput)
                             {
                                 <button class="identity-option identity-option--admin"
-                                        @onclick="() => _showAdminInput = true">
-                                    Bachir
+                                        @onclick="ShowAdminInput">
+                                    🔐 Bachir (Admin)
                                 </button>
                             }
                             else
@@ -50,13 +65,15 @@
                                 <div class="admin-login-row">
                                     <span class="admin-label">Bachir</span>
                                     <input type="password"
+                                           id="admin-pwd-input"
                                            class="form-control form-control-sm"
                                            placeholder="Mot de passe"
                                            @bind="_adminPassword"
+                                           @bind:event="oninput"
                                            @onkeydown="HandleAdminKeyDown"
                                            disabled="@_loading" />
                                     <button class="btn btn-sm btn-primary"
-                                            disabled="@_loading"
+                                            disabled="@(_loading || string.IsNullOrEmpty(_adminPassword))"
                                             @onclick="AdminLogin">
                                         Valider
                                     </button>
@@ -65,7 +82,15 @@
 
                             @if (!string.IsNullOrEmpty(_error))
                             {
-                                <div class="dropdown-error">@_error</div>
+                                <div class="dropdown-error">⚠ @_error</div>
+                            }
+
+                            @if (_loading)
+                            {
+                                <div class="text-center py-2">
+                                    <div class="spinner-border spinner-border-sm text-secondary"
+                                         role="status"></div>
+                                </div>
                             }
                         </div>
                     }
@@ -78,16 +103,14 @@
         @Body
     </main>
 </div>
-</CascadingAuthenticationState>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
-    <a class="dismiss">X</a>
+    <a class="dismiss">✕</a>
 </div>
 
 @code {
-    // ── Dropdown state ───────────────────────────────────
     private bool   _showDropdown;
     private bool   _showAdminInput;
     private string _adminPassword = string.Empty;
@@ -106,6 +129,11 @@
         "Amel"
     ];
 
+    // Typed accessor — avoids repetitive casts throughout the @code block.
+    private CustomAuthStateProvider AuthState =>
+        (CustomAuthStateProvider)AuthProvider;
+
+    // ── Dropdown toggle ──────────────────────────────────
     private void ToggleDropdown()
     {
         _showDropdown   = !_showDropdown;
@@ -114,29 +142,35 @@
         _error          = string.Empty;
     }
 
-    // ── Closer (passwordless) ────────────────────────────
+    private void ShowAdminInput()
+    {
+        _showAdminInput = true;
+        _error          = string.Empty;
+    }
+
+    // ── Closer login (passwordless) ──────────────────────
     private async Task SelectCloser(string name)
     {
         _loading = true;
         _error   = string.Empty;
-
         try
         {
             var result = await Api.SelectCloserAsync(name);
             if (result is not null)
             {
-                await ((CustomAuthStateProvider)AuthProvider)
-                    .MarkUserAsAuthenticated(result.Token);
+                await AuthState.MarkUserAsAuthenticated(result.Token);
                 _showDropdown = false;
+                // forceLoad: true ensures every component re-evaluates auth state.
+                Nav.NavigateTo("/", forceLoad: true);
             }
             else
             {
-                _error = "Échec de connexion.";
+                _error = "Identité non reconnue. Contactez votre admin.";
             }
         }
         catch
         {
-            _error = "Erreur réseau.";
+            _error = "Erreur réseau — vérifiez la connexion.";
         }
         finally
         {
@@ -144,20 +178,20 @@
         }
     }
 
-    // ── Admin (password) ─────────────────────────────────
+    // ── Admin login (password) ───────────────────────────
     private async Task AdminLogin()
     {
+        if (string.IsNullOrWhiteSpace(_adminPassword)) return;
         _loading = true;
         _error   = string.Empty;
-
         try
         {
             var result = await Api.AdminLoginAsync("Bachir", _adminPassword);
             if (result is not null)
             {
-                await ((CustomAuthStateProvider)AuthProvider)
-                    .MarkUserAsAuthenticated(result.Token);
+                await AuthState.MarkUserAsAuthenticated(result.Token);
                 _showDropdown = false;
+                Nav.NavigateTo("/", forceLoad: true);
             }
             else
             {
@@ -166,23 +200,25 @@
         }
         catch
         {
-            _error = "Erreur réseau.";
+            _error = "Erreur réseau — vérifiez la connexion.";
         }
         finally
         {
-            _loading = false;
+            _loading      = false;
+            _adminPassword = string.Empty;
         }
     }
 
     private async Task HandleAdminKeyDown(KeyboardEventArgs e)
     {
-        if (e.Key == "Enter")
-            await AdminLogin();
+        if (e.Key == "Enter") await AdminLogin();
     }
 
     // ── Logout ───────────────────────────────────────────
     private async Task HandleLogout()
     {
-        await ((CustomAuthStateProvider)AuthProvider).Logout();
+        _loading = true;
+        await AuthState.Logout();
+        Nav.NavigateTo("/", forceLoad: true);
     }
 }

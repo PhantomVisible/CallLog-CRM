@@ -74,6 +74,13 @@ public class ApiService
         return await _http.GetFromJsonAsync<List<CallLog>>("api/calllogs") ?? [];
     }
 
+    // GET /api/calllogs/mine — only the authenticated closer's logs, newest first.
+    public async Task<List<CallLog>> GetMyCallLogsAsync()
+    {
+        await AttachTokenAsync();
+        return await _http.GetFromJsonAsync<List<CallLog>>("api/calllogs/mine") ?? [];
+    }
+
     // POST /api/calllogs
     // Returns true on 2xx, throws on network failure so the caller can show an error.
     public async Task<bool> CreateCallLogAsync(CreateCallLogRequest request)

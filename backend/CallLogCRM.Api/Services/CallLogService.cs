@@ -52,6 +52,12 @@ public class CallLogService(
                    .OrderByDescending(l => l.CreatedAt)
                    .ToListAsync();
 
+    public async Task<IEnumerable<CallLog>> GetMyCallLogsAsync(Guid userId)
+        => await db.CallLogs
+                   .Where(l => l.UserId == userId)
+                   .OrderByDescending(l => l.CreatedAt)
+                   .ToListAsync();
+
     private static string? GetSmsMessage(CallOutcome outcome) => outcome switch
     {
         CallOutcome.NotAnswered_VoicemailLeft => "We tried to reach you and left a voicemail. Reply YES to get a callback.",

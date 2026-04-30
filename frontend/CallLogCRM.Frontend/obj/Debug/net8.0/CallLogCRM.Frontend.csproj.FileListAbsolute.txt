@@ -30,3 +30,4 @@
 /home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/CallLogCRM.Frontend.csproj.AssemblyReference.cache
 /home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/CallLogCRM.Frontend.csproj.CopyComplete
 /home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/CallLogCRM.Frontend.sourcelink.json
+/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/Components/Pages/Home.razor.rz.scp.css

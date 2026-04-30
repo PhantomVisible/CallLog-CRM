@@ -12,12 +12,14 @@ builder.Services.AddRazorComponents()
 builder.Services.AddBlazoredSessionStorage();
 
 // Auth state — reads the JWT from session storage and exposes claims to <AuthorizeView>.
+// CascadingAuthenticationState is provided by the <CascadingAuthenticationState> wrapper
+// in Routes.razor (NOT by AddCascadingAuthenticationState — that API creates a singleton
+// cascading source incompatible with our scoped AuthenticationStateProvider).
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddAuthorizationCore();
 
 // Typed HttpClient for the backend API.
 // BaseAddress is read from "ApiBaseUrl" in appsettings.json.
-// Update that value to match wherever the backend is running.
 builder.Services.AddHttpClient<ApiService>(client =>
 {
     client.BaseAddress = new Uri(

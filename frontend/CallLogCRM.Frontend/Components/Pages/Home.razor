@@ -8,7 +8,7 @@
 <div class="home-container">
 
     <AuthorizeView>
-        <!-- ── Not logged in ──────────────────────────── -->
+        @* ── Not logged in ──────────────────────────── *@
         <NotAuthorized>
             <div class="hero-section">
                 <h1>Bienvenue sur CallLog CRM</h1>
@@ -18,7 +18,7 @@
             </div>
         </NotAuthorized>
 
-        <!-- ── Logged in ──────────────────────────────── -->
+        @* ── Logged in ──────────────────────────────── *@
         <Authorized>
             <div class="hero-section">
                 <h1>Ma Queue d'Appels</h1>
@@ -53,28 +53,39 @@
                                 <th>Téléphone</th>
                                 <th>Rendez-vous</th>
                                 <th>Source</th>
-                                <th></th>
+                                <th>Statut</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var r in _reservations)
                             {
-                                <tr>
+                                var callUrl = $"/call/{r.Id}";
+                                <tr @onclick="() => Nav.NavigateTo(callUrl)" class="queue-row">
                                     <td class="fw-medium">@r.CustomerName</td>
                                     <td class="text-muted small">@r.PhoneNumber</td>
                                     <td class="small">
-                                        @r.AppointmentDate.ToLocalTime().ToString("dd MMM yyyy")
+                                        @(r.AppointmentDate == DateTime.MinValue
+                                            ? "À définir"
+                                            : r.AppointmentDate.ToLocalTime().ToString("dd MMM yyyy"))
                                     </td>
                                     <td>
-                                        <span class="badge bg-secondary bg-opacity-25 text-dark">
+                                        <span class="badge bg-secondary bg-opacity-25 text-dark small">
                                             @r.Source
                                         </span>
                                     </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-sm btn-primary"
-                                                @onclick="() => StartCall(r.Id)">
-                                            Appeler
-                                        </button>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(r.CurrentStatus))
+                                        {
+                                            <span class="status-badge @StatusCss(r.CurrentStatus)">
+                                                @r.CurrentStatus
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge status-call">
+                                                ▶ Lancer l'appel
+                                            </span>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -85,7 +96,7 @@
 
             <hr class="section-divider" />
 
-            <!-- ── Recent Call History ─────────────────── -->
+            @* ── Recent Call History ─────────────────── *@
             <div>
                 <div class="history-header">
                     <h6 class="mb-0 fw-bold text-uppercase text-muted" style="letter-spacing:.05em">
@@ -153,7 +164,7 @@
         try
         {
             _reservations = await ApiService.GetMyReservationsAsync();
-            _logs         = await ApiService.GetCallLogsAsync();
+            _logs         = await ApiService.GetMyCallLogsAsync();
         }
         catch (Exception ex)
         {
@@ -165,10 +176,18 @@
         }
     }
 
-    private void StartCall(Guid reservationId) => Nav.NavigateTo($"/call/{reservationId}");
+    // ── Status badge CSS ─────────────────────────────
+    private static string StatusCss(string status)
+    {
+        var s = status.Trim().ToLowerInvariant();
+        if (s.Contains("vente") && !s.Contains("pas"))              return "status-vente";
+        if (s.Contains("pas de vente") || s.Contains("pas vente")) return "status-pas-vente";
+        if (s.Contains("rdv") || s.Contains("confirm"))            return "status-rdv";
+        if (s.Contains("rappel"))                                   return "status-rappel";
+        return "status-autre";
+    }
 
-    // ── Helpers ──────────────────────────────────────────
-
+    // ── Outcome helpers ──────────────────────────────
     private static string FormatOutcome(string outcome) => outcome switch
     {
         "Answered_Available"        => "Répondu — Disponible",

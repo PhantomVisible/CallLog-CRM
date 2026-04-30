@@ -1,0 +1,8 @@
+@* 
+    Shown by AuthorizeRouteView when a user hits a [Authorize]-gated page without a token.
+    Simply bounces them to the home page where the identity selector is visible.
+*@
+@inject NavigationManager Nav
+@code {
+    protected override void OnInitialized() => Nav.NavigateTo("/", replace: true);
+}

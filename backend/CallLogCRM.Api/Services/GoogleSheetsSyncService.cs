@@ -10,10 +10,13 @@ namespace CallLogCRM.Api.Services;
 /// <summary>
 /// Background service that periodically fetches daily call assignments from a
 /// Google Sheet and upserts them into the <see cref="CallReservation"/> table.
-/// 
-/// Spreadsheet columns (A–G, starting at row 2):
-///   [0] Source  [1] Nom  [2] Email  [3] Telephone
-///   [4] Date Rendez-Vous  [5] Closeuse  [6] Statut Call
+///
+/// Actual spreadsheet columns (A–H, starting at row 2):
+///   [0] Source   [1] Nom   [2] Email   [3] Telephone
+///   [4] (unused) [5] Date Rendez-Vous  [6] Closeuse   [7] Statut Call
+///
+/// Separator rows ("JOUR X", empty lines, etc.) are skipped automatically:
+/// any row missing a phone number in [3] or a name in [1] is ignored.
 /// </summary>
 public sealed class GoogleSheetsSyncService : BackgroundService
 {
@@ -117,60 +120,122 @@ public sealed class GoogleSheetsSyncService : BackgroundService
         using var scope = _services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        // Load all users once so we can map closer names to IDs in-memory.
+        // ── Purge-on-sync ────────────────────────────────────────────────────
+        // Delete ALL existing reservations before re-importing.
+        // This guarantees the DB always reflects the current sheet state and
+        // eliminates any previously mis-mapped rows.
+        var purged = await db.CallReservations.ExecuteDeleteAsync(ct);
+        _logger.LogInformation("Purged {Count} stale reservations before re-sync.", purged);
+
+        // ── Load users once for closer-name → ID lookup ──────────────────────
         var users = await db.Users.AsNoTracking().ToListAsync(ct);
-        var userMap = users
-            .ToDictionary(u => u.CloserName, u => u.Id, StringComparer.OrdinalIgnoreCase);
+        var userMap = users.ToDictionary(u => u.CloserName, u => u.Id,
+            StringComparer.OrdinalIgnoreCase);
 
         var inserted = 0;
         var skipped  = 0;
 
         foreach (var row in rows)
         {
-            // Guard against short / blank rows.
+            // ── STEP 1: skip separator / garbage rows ────────────────────────
+            // Minimum meaningful row = 6 cells: col-A absent AND Status stripped,
+            // but the closer name still present at index 5.  Anything shorter is
+            // a "JOUR X" header, blank line, or otherwise unparseable noise.
             if (row.Count < 6)
             {
                 skipped++;
                 continue;
             }
 
-            var source       = row[0]?.ToString()?.Trim() ?? string.Empty;
-            var customerName = row[1]?.ToString()?.Trim() ?? string.Empty;
-            var email        = row[2]?.ToString()?.Trim() ?? string.Empty;
-            var phone        = row[3]?.ToString()?.Trim() ?? string.Empty;
-            var dateRaw      = row[4]?.ToString()?.Trim() ?? string.Empty;
-            var closerName   = row[5]?.ToString()?.Trim() ?? string.Empty;
+            // Reject rows whose first non-empty cell contains "JOUR".
+            var firstNonEmpty = row.FirstOrDefault(c =>
+                !string.IsNullOrWhiteSpace(c?.ToString()))?.ToString() ?? string.Empty;
+            if (firstNonEmpty.Contains("JOUR", StringComparison.OrdinalIgnoreCase))
+            {
+                skipped++;
+                continue;
+            }
 
-            // Resolve the closer → user ID.
+            // ── STEP 2: shift-proof offset detection ─────────────────────────
+            // The Sheets API strips TRAILING empty cells, so a row's column count
+            // depends on which cells are populated, not on the sheet's column count.
+            // This creates four possible layouts:
+            //
+            //  count ≥ 8 → col-A present, Status present
+            //               [0]=A [1]=Source [2]=Nom [3]=Email [4]=Phone [5]=Date [6]=Closer [7]=Status
+            //               o = 1
+            //
+            //  count = 7 → AMBIGUOUS — two cases share the same count:
+            //    a) col-A absent,  Status present  → [0]=Source … [5]=Closer [6]=Status  → o = 0
+            //    b) col-A present, Status stripped  → [0]=A … [5]=Date [6]=Closer         → o = 1
+            //    Resolution: probe row[5] and row[6] as closer candidates; whichever
+            //    matches a known user determines the offset.  If neither matches, we
+            //    default to o=0 and let STEP 3 reject the row cleanly.
+            //
+            //  count = 6 → col-A absent, Status stripped
+            //               [0]=Source [1]=Nom [2]=Email [3]=Phone [4]=Date [5]=Closer
+            //               o = 0
+            int o;
+            if (row.Count >= 8)
+            {
+                o = 1;
+            }
+            else if (row.Count == 7)
+            {
+                var probe0 = row[5]?.ToString()?.Trim() ?? string.Empty; // closer if o=0
+                var probe1 = row[6]?.ToString()?.Trim() ?? string.Empty; // closer if o=1
+                o = (!userMap.ContainsKey(probe0) && userMap.ContainsKey(probe1)) ? 1 : 0;
+            }
+            else // count == 6
+            {
+                o = 0;
+            }
+
+            string Cell(int idx) =>
+                idx < row.Count ? row[idx]?.ToString()?.Trim() ?? string.Empty
+                                : string.Empty;
+
+            var source       = Cell(o);         // Col B: Source / campaign
+            var customerName = Cell(o + 1);     // Col C: Client name
+            var email        = Cell(o + 2);     // Col D: Email
+            var phone        = Cell(o + 3);     // Col E: Phone
+            var dateRaw      = Cell(o + 4);     // Col F: Appointment date
+            var closerName   = Cell(o + 5);     // Col G: Closer name
+            var rawStatus    = Cell(o + 6);     // Col H: Statut Call
+            var currentStatus = string.IsNullOrWhiteSpace(rawStatus) ? null : rawStatus;
+
+            _logger.LogDebug(
+                "Row [cols={Count} offset={O}] name='{Name}' phone='{Phone}' closer='{Closer}' status='{Status}'",
+                row.Count, o, customerName, phone, closerName, currentStatus ?? "(null)");
+
+            // ── STEP 3: "Closer First" — a valid closer is the only hard requirement ──
+            // Rows without a recognisable closer name are structural noise (headers,
+            // separators, blank lines) and are always skipped.
+            // Missing phone, client name, or date get safe defaults instead of
+            // discarding the row — this is what lets incomplete rows reach Hayat's queue.
             if (!userMap.TryGetValue(closerName, out var userId))
             {
-                _logger.LogWarning(
-                    "Closer '{Closer}' not found in Users table — skipping row for '{Customer}'.",
+                _logger.LogDebug(
+                    "Closer '{Closer}' not in Users table — skipping row (name='{Name}').",
                     closerName, customerName);
                 skipped++;
                 continue;
             }
 
-            // Parse the appointment date.
-            if (!TryParseDate(dateRaw, out var appointmentDate))
-            {
-                _logger.LogWarning(
-                    "Unable to parse date '{DateRaw}' — skipping row for '{Customer}'.",
-                    dateRaw, customerName);
-                skipped++;
-                continue;
-            }
+            // ── STEP 4: fill defaults for incomplete data ──────────────────────
+            if (string.IsNullOrWhiteSpace(customerName))
+                customerName = "Client Inconnu";
 
-            // Duplicate check: same phone + same appointment date.
-            var exists = await db.CallReservations.AnyAsync(
-                r => r.PhoneNumber == phone && r.AppointmentDate == appointmentDate, ct);
+            if (string.IsNullOrWhiteSpace(phone))
+                phone = "Inconnu";
 
-            if (exists)
-            {
-                skipped++;
-                continue;
-            }
+            // Rows with missing or unparseable dates are stored with DateTime.MinValue.
+            // The frontend renders these as "À définir" so the row remains clickable.
+            var appointmentDate = TryParseDate(dateRaw, out var parsed)
+                ? parsed
+                : DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
 
+            // ── STEP 5: insert (table was purged above — no duplicate check needed) ─
             db.CallReservations.Add(new CallReservation
             {
                 AssignedUserId  = userId,
@@ -178,7 +243,8 @@ public sealed class GoogleSheetsSyncService : BackgroundService
                 PhoneNumber     = phone,
                 Email           = email,
                 AppointmentDate = appointmentDate,
-                Source          = string.IsNullOrEmpty(source) ? "GoogleSheet" : source
+                Source          = string.IsNullOrEmpty(source) ? "GoogleSheet" : source,
+                CurrentStatus   = currentStatus
             });
 
             inserted++;
@@ -188,7 +254,7 @@ public sealed class GoogleSheetsSyncService : BackgroundService
             await db.SaveChangesAsync(ct);
 
         _logger.LogInformation(
-            "Sync result: {Inserted} inserted, {Skipped} skipped (duplicates / bad data).",
+            "Sync complete: {Inserted} inserted, {Skipped} skipped.",
             inserted, skipped);
     }
 

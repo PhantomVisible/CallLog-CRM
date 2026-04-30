@@ -13,4 +13,7 @@ public class CallReservation
     public string   Email           { get; set; } = string.Empty;
     public DateTime AppointmentDate { get; set; }
     public string   Source          { get; set; } = string.Empty;
+
+    // Live status from the Google Sheet "Statut Call" column (H).
+    public string?  CurrentStatus   { get; set; }
 }

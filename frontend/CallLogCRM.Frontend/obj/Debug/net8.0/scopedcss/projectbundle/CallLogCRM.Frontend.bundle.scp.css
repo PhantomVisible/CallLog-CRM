@@ -1,61 +1,79 @@
 /* _content/CallLogCRM.Frontend/Components/Layout/MainLayout.razor.rz.scp.css */
-/* ── Identity area ──────────────────────────────────── */
+/* ── Header overflow fix — lets the dropdown hang below the sticky header ── */
+/* The app-header has z-index:100 in app.css; overflow must stay visible.     */
+
+/* ── Identity area ──────────────────────────────────────────────────────── */
 .identity-area[b-j699pgj0wv] {
     position: relative;
 }
 
 .identity-name[b-j699pgj0wv] {
     color: #d0d0ff;
-    font-weight: 600;
     font-size: 0.88rem;
 }
 
-/* ── Dropdown ──────────────────────────────────────── */
+/* ── Dropdown panel ─────────────────────────────────────────────────────── */
 .identity-dropdown[b-j699pgj0wv] {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 8px);
     right: 0;
-    min-width: 220px;
+    min-width: 240px;
     background: #ffffff;
     border: 1px solid #dee2e6;
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, .15);
-    padding: 0.4rem 0;
-    z-index: 200;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+    padding: 0.35rem 0 0.5rem;
+    z-index: 300; /* above the sticky header's z-index:100 */
 }
 
+/* ── Dropdown section header ─────────────────────────────────────────────── */
+.identity-dropdown-header[b-j699pgj0wv] {
+    padding: 0.4rem 1rem 0.55rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 0.25rem;
+}
+
+/* ── Closer name buttons ─────────────────────────────────────────────────── */
 .identity-option[b-j699pgj0wv] {
     display: block;
     width: 100%;
     background: none;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.48rem 1rem;
     text-align: left;
     font-size: 0.88rem;
     color: #1a1a2e;
     cursor: pointer;
-    transition: background 0.12s ease;
+    transition: background 0.1s ease, color 0.1s ease;
+    border-radius: 0;
 }
 
 .identity-option:hover:not(:disabled)[b-j699pgj0wv] {
     background: #f0f0ff;
+    color: #3730a3;
 }
 
 .identity-option:disabled[b-j699pgj0wv] {
-    opacity: 0.55;
+    opacity: 0.5;
     cursor: wait;
 }
 
 .identity-option--admin[b-j699pgj0wv] {
     font-weight: 700;
+    color: #374151;
 }
 
-/* ── Admin inline login ────────────────────────────── */
+/* ── Admin inline login row ──────────────────────────────────────────────── */
 .admin-login-row[b-j699pgj0wv] {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.45rem 0.75rem;
+    padding: 0.4rem 0.75rem;
 }
 
 .admin-label[b-j699pgj0wv] {
@@ -70,15 +88,75 @@
     min-width: 0;
 }
 
-/* ── Dropdown error ────────────────────────────────── */
+/* ── Error message ───────────────────────────────────────────────────────── */
 .dropdown-error[b-j699pgj0wv] {
-    padding: 0.35rem 1rem;
+    padding: 0.3rem 1rem;
     font-size: 0.78rem;
-    color: #e50000;
+    color: #dc2626;
+    font-weight: 500;
+}
+/* _content/CallLogCRM.Frontend/Components/Pages/Home.razor.rz.scp.css */
+/* ── Clickable queue row ─────────────────────────────────────────────────── */
+.queue-row[b-svx0rnrqzm] {
+    cursor: pointer;
+    transition: background 0.1s ease;
 }
 
-/* ── Divider ───────────────────────────────────────── */
-.dropdown-divider[b-j699pgj0wv] {
-    margin: 0.3rem 0;
-    border-top: 1px solid #dee2e6;
+.queue-row:hover[b-svx0rnrqzm] {
+    background: #f5f3ff !important; /* light indigo tint on hover */
+}
+
+/* ── Status badges (CurrentStatus from Google Sheet col H) ───────────────── */
+.status-badge[b-svx0rnrqzm] {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: opacity 0.12s ease, transform 0.1s ease;
+}
+
+.status-badge:hover[b-svx0rnrqzm] {
+    opacity: 0.82;
+    transform: scale(1.04);
+}
+
+/* "▶ Lancer l'appel" — default when no status yet */
+.status-call[b-svx0rnrqzm] {
+    background: #ede9fe;
+    color: #4f46e5;
+    border: 1px solid #c4b5fd;
+}
+
+/* Vente (sale confirmed) ─ green */
+.status-vente[b-svx0rnrqzm] {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* Pas de vente (no sale) ─ red */
+.status-pas-vente[b-svx0rnrqzm] {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* RDV confirmé ─ blue */
+.status-rdv[b-svx0rnrqzm] {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* Rappel ─ amber */
+.status-rappel[b-svx0rnrqzm] {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Other statuses ─ neutral */
+.status-autre[b-svx0rnrqzm] {
+    background: #f1f5f9;
+    color: #475569;
 }

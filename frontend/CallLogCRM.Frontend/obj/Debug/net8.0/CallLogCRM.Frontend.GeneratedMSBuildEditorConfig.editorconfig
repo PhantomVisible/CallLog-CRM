@@ -30,8 +30,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/Components/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
+[/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/Components/RedirectToLogin.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9SZWRpcmVjdFRvTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/Components/Routes.razor]
@@ -45,3 +45,7 @@ build_metadata.AdditionalFiles.CssScope =
 [/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-j699pgj0wv
+
+[/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-svx0rnrqzm

@@ -1,0 +1,64 @@
+/* ── Clickable queue row ─────────────────────────────────────────────────── */
+.queue-row[b-svx0rnrqzm] {
+    cursor: pointer;
+    transition: background 0.1s ease;
+}
+
+.queue-row:hover[b-svx0rnrqzm] {
+    background: #f5f3ff !important; /* light indigo tint on hover */
+}
+
+/* ── Status badges (CurrentStatus from Google Sheet col H) ───────────────── */
+.status-badge[b-svx0rnrqzm] {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: opacity 0.12s ease, transform 0.1s ease;
+}
+
+.status-badge:hover[b-svx0rnrqzm] {
+    opacity: 0.82;
+    transform: scale(1.04);
+}
+
+/* "▶ Lancer l'appel" — default when no status yet */
+.status-call[b-svx0rnrqzm] {
+    background: #ede9fe;
+    color: #4f46e5;
+    border: 1px solid #c4b5fd;
+}
+
+/* Vente (sale confirmed) ─ green */
+.status-vente[b-svx0rnrqzm] {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* Pas de vente (no sale) ─ red */
+.status-pas-vente[b-svx0rnrqzm] {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* RDV confirmé ─ blue */
+.status-rdv[b-svx0rnrqzm] {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* Rappel ─ amber */
+.status-rappel[b-svx0rnrqzm] {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Other statuses ─ neutral */
+.status-autre[b-svx0rnrqzm] {
+    background: #f1f5f9;
+    color: #475569;
+}

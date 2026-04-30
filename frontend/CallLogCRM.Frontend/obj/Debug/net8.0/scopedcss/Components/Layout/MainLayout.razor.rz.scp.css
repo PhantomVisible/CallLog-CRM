@@ -1,60 +1,78 @@
-/* ── Identity area ──────────────────────────────────── */
+/* ── Header overflow fix — lets the dropdown hang below the sticky header ── */
+/* The app-header has z-index:100 in app.css; overflow must stay visible.     */
+
+/* ── Identity area ──────────────────────────────────────────────────────── */
 .identity-area[b-j699pgj0wv] {
     position: relative;
 }
 
 .identity-name[b-j699pgj0wv] {
     color: #d0d0ff;
-    font-weight: 600;
     font-size: 0.88rem;
 }
 
-/* ── Dropdown ──────────────────────────────────────── */
+/* ── Dropdown panel ─────────────────────────────────────────────────────── */
 .identity-dropdown[b-j699pgj0wv] {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 8px);
     right: 0;
-    min-width: 220px;
+    min-width: 240px;
     background: #ffffff;
     border: 1px solid #dee2e6;
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, .15);
-    padding: 0.4rem 0;
-    z-index: 200;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+    padding: 0.35rem 0 0.5rem;
+    z-index: 300; /* above the sticky header's z-index:100 */
 }
 
+/* ── Dropdown section header ─────────────────────────────────────────────── */
+.identity-dropdown-header[b-j699pgj0wv] {
+    padding: 0.4rem 1rem 0.55rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 0.25rem;
+}
+
+/* ── Closer name buttons ─────────────────────────────────────────────────── */
 .identity-option[b-j699pgj0wv] {
     display: block;
     width: 100%;
     background: none;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.48rem 1rem;
     text-align: left;
     font-size: 0.88rem;
     color: #1a1a2e;
     cursor: pointer;
-    transition: background 0.12s ease;
+    transition: background 0.1s ease, color 0.1s ease;
+    border-radius: 0;
 }
 
 .identity-option:hover:not(:disabled)[b-j699pgj0wv] {
     background: #f0f0ff;
+    color: #3730a3;
 }
 
 .identity-option:disabled[b-j699pgj0wv] {
-    opacity: 0.55;
+    opacity: 0.5;
     cursor: wait;
 }
 
 .identity-option--admin[b-j699pgj0wv] {
     font-weight: 700;
+    color: #374151;
 }
 
-/* ── Admin inline login ────────────────────────────── */
+/* ── Admin inline login row ──────────────────────────────────────────────── */
 .admin-login-row[b-j699pgj0wv] {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.45rem 0.75rem;
+    padding: 0.4rem 0.75rem;
 }
 
 .admin-label[b-j699pgj0wv] {
@@ -69,15 +87,10 @@
     min-width: 0;
 }
 
-/* ── Dropdown error ────────────────────────────────── */
+/* ── Error message ───────────────────────────────────────────────────────── */
 .dropdown-error[b-j699pgj0wv] {
-    padding: 0.35rem 1rem;
+    padding: 0.3rem 1rem;
     font-size: 0.78rem;
-    color: #e50000;
-}
-
-/* ── Divider ───────────────────────────────────────── */
-.dropdown-divider[b-j699pgj0wv] {
-    margin: 0.3rem 0;
-    border-top: 1px solid #dee2e6;
+    color: #dc2626;
+    font-weight: 500;
 }

@@ -32,10 +32,24 @@ public class CallLogsController(ICallLogService callLogService) : ControllerBase
     }
 
     // GET /api/calllogs
-    // Returns all call logs from Postgres, ordered newest-first.
+    // Returns all call logs (admin view), ordered newest-first.
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CallLog>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAllCallLogs()
         => Ok(await callLogService.GetAllCallLogsAsync());
+
+    // GET /api/calllogs/mine
+    // Returns only the authenticated closer's own logs, newest-first.
+    [HttpGet("mine")]
+    [ProducesResponseType(typeof(IEnumerable<CallLog>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetMyCallLogs()
+    {
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Unauthorized();
+
+        return Ok(await callLogService.GetMyCallLogsAsync(userId));
+    }
 }

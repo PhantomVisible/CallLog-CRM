@@ -15,5 +15,9 @@ public class CallReservation
     // Identifies where the reservation came from (e.g. "GoogleSheet", "Manual").
     public string   Source          { get; set; } = string.Empty;
 
+    // Live status synced from the Google Sheet "Statut Call" column (H).
+    // Examples: "Vente", "Pas de vente", "RDV confirmé", etc. Null = not yet set.
+    public string?  CurrentStatus   { get; set; }
+
     public User User { get; set; } = null!;
 }
