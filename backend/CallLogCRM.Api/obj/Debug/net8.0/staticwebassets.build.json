@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "wYjs+ExdfmIS7PZoK8/eO+HOWNk5b1XI1f/SRneBnyM=",
+  "Source": "CallLogCRM.Api",
+  "BasePath": "_content/CallLogCRM.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

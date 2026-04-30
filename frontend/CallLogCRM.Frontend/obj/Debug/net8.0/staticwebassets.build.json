@@ -1,0 +1,77 @@
+{
+  "Version": 1,
+  "Hash": "w9dmAqGirvVO60e5W+f7yOlj0opsFjvWBGPMwMSo8dA=",
+  "Source": "CallLogCRM.Frontend",
+  "BasePath": "_content/CallLogCRM.Frontend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "CallLogCRM.Frontend/wwwroot",
+      "Source": "CallLogCRM.Frontend",
+      "ContentRoot": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/",
+      "BasePath": "_content/CallLogCRM.Frontend",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/bundle/CallLogCRM.Frontend.styles.css",
+      "SourceId": "CallLogCRM.Frontend",
+      "SourceType": "Computed",
+      "ContentRoot": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/bundle/",
+      "BasePath": "_content/CallLogCRM.Frontend",
+      "RelativePath": "CallLogCRM.Frontend.styles.css",
+      "AssetKind": "All",
+      "AssetMode": "CurrentProject",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ApplicationBundle",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/bundle/CallLogCRM.Frontend.styles.css"
+    },
+    {
+      "Identity": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/projectbundle/CallLogCRM.Frontend.bundle.scp.css",
+      "SourceId": "CallLogCRM.Frontend",
+      "SourceType": "Computed",
+      "ContentRoot": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/projectbundle/",
+      "BasePath": "_content/CallLogCRM.Frontend",
+      "RelativePath": "CallLogCRM.Frontend.bundle.scp.css",
+      "AssetKind": "All",
+      "AssetMode": "Reference",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ProjectBundle",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/projectbundle/CallLogCRM.Frontend.bundle.scp.css"
+    },
+    {
+      "Identity": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/app.css",
+      "SourceId": "CallLogCRM.Frontend",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/",
+      "BasePath": "_content/CallLogCRM.Frontend",
+      "RelativePath": "app.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/app.css"
+    }
+  ]
+}

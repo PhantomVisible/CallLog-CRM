@@ -1,0 +1,183 @@
+/* ---- Base ---- */
+*, *::before, *::after { box-sizing: border-box; }
+
+h1:focus { outline: none; }
+
+.valid.modified:not([type=checkbox]) { outline: 1px solid #26b050; }
+.invalid { outline: 1px solid #e50000; }
+.validation-message { color: #e50000; }
+
+/* ---- Layout ---- */
+.layout-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f8f9fa;
+}
+
+.app-header {
+    background: #1a1a2e;
+    padding: 0.85rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-brand {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.3px;
+}
+
+.header-brand:hover { color: #d0d0ff; }
+
+.app-main {
+    flex: 1;
+    padding: 1.75rem 1rem;
+}
+
+/* ---- Home Page ---- */
+.home-container {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.hero-section {
+    text-align: center;
+    padding: 2.5rem 1rem 2rem;
+}
+
+.hero-section h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 0.4rem;
+}
+
+.hero-section p {
+    color: #6c757d;
+    margin-bottom: 1.75rem;
+    font-size: 1rem;
+}
+
+.btn-hero {
+    padding: 0.9rem 3rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: 12px;
+    min-width: 200px;
+    transition: transform 0.1s ease;
+}
+
+.btn-hero:active { transform: scale(0.97); }
+
+.section-divider {
+    border: none;
+    border-top: 1px solid #dee2e6;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.85rem;
+}
+
+/* ---- Outcome Badges ---- */
+.outcome-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.28rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.outcome-answered {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.outcome-not-answered {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* ---- Call Flow Page ---- */
+.call-container {
+    max-width: 460px;
+    margin: 0 auto;
+    padding-top: 0.5rem;
+}
+
+.step-badge {
+    display: inline-block;
+    background: #e9ecef;
+    color: #6c757d;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.22rem 0.75rem;
+    border-radius: 20px;
+    margin-bottom: 1.1rem;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.call-question {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 1.6rem;
+    line-height: 1.25;
+}
+
+/* ---- Action Buttons ---- */
+.btn-action {
+    display: block;
+    width: 100%;
+    padding: 0.95rem 1.25rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 10px;
+    margin-bottom: 0.65rem;
+    text-align: left;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.btn-action:active:not(:disabled) { transform: scale(0.98); }
+.btn-action:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-back {
+    font-size: 0.88rem;
+    color: #6c757d;
+    text-decoration: none;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.btn-back:hover { color: #343a40; }
+
+/* ---- Blazor Error UI ---- */
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0,0,0,.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

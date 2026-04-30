@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "dgSpecHash": "P/NNqa1FuDKBSLiG+iP6Q3pK/pAhAqkYZ7r96+SGFq774XNGQMB8Qv+FQwLoFXCK+hmMl4UGsEKEAa55/twpLQ==",
+  "success": true,
+  "projectFilePath": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/CallLogCRM.Frontend.csproj",
+  "expectedPackageFiles": [
+    "/home/phantomvisible/.nuget/packages/blazored.sessionstorage/2.4.0/blazored.sessionstorage.2.4.0.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.aspnetcore.authorization/7.0.1/microsoft.aspnetcore.authorization.7.0.1.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.aspnetcore.components/7.0.1/microsoft.aspnetcore.components.7.0.1.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.aspnetcore.components.analyzers/7.0.1/microsoft.aspnetcore.components.analyzers.7.0.1.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.aspnetcore.components.forms/7.0.1/microsoft.aspnetcore.components.forms.7.0.1.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.aspnetcore.components.web/7.0.1/microsoft.aspnetcore.components.web.7.0.1.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.aspnetcore.metadata/7.0.1/microsoft.aspnetcore.metadata.7.0.1.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.extensions.dependencyinjection/7.0.0/microsoft.extensions.dependencyinjection.7.0.0.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/7.0.0/microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.extensions.logging.abstractions/7.0.0/microsoft.extensions.logging.abstractions.7.0.0.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.extensions.options/7.0.0/microsoft.extensions.options.7.0.0.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.extensions.primitives/7.0.0/microsoft.extensions.primitives.7.0.0.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/microsoft.jsinterop/7.0.1/microsoft.jsinterop.7.0.1.nupkg.sha512",
+    "/home/phantomvisible/.nuget/packages/system.io.pipelines/7.0.0/system.io.pipelines.7.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

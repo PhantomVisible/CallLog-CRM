@@ -1,0 +1,29 @@
+{
+  "Files": [
+    {
+      "Id": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/projectbundle/CallLogCRM.Frontend.bundle.scp.css",
+      "PackagePath": "staticwebassets/CallLogCRM.Frontend.bundle.scp.css"
+    },
+    {
+      "Id": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/app.css",
+      "PackagePath": "staticwebassets/app.css"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.CallLogCRM.Frontend.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.CallLogCRM.Frontend.props",
+      "PackagePath": "build\\CallLogCRM.Frontend.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.CallLogCRM.Frontend.props",
+      "PackagePath": "buildMultiTargeting\\CallLogCRM.Frontend.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.CallLogCRM.Frontend.props",
+      "PackagePath": "buildTransitive\\CallLogCRM.Frontend.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

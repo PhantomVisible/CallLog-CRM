@@ -1,0 +1,171 @@
+@page "/call"
+@rendermode InteractiveServer
+@inject ApiService ApiService
+@inject NavigationManager Nav
+
+<PageTitle>Log Call — CallLog CRM</PageTitle>
+
+<div class="call-container">
+
+    @if (_step == 1)
+    {
+        <span class="step-badge">Step 1 of 3</span>
+        <p class="call-question">Who are you calling?</p>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Customer Name</label>
+            <input class="form-control form-control-lg"
+                   @bind="_customerName"
+                   @bind:event="oninput"
+                   placeholder="Full name" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Phone Number</label>
+            <input class="form-control form-control-lg"
+                   @bind="_phoneNumber"
+                   @bind:event="oninput"
+                   placeholder="+1 555 000 0000"
+                   type="tel" />
+        </div>
+
+        @if (_validationError != null)
+        {
+            <div class="alert alert-warning py-2 small">@_validationError</div>
+        }
+
+        <button class="btn btn-primary btn-action mt-1" @onclick="GoToStep2">
+            Next →
+        </button>
+    }
+
+    else if (_step == 2)
+    {
+        <span class="step-badge">Step 2 of 3</span>
+        <p class="call-question">Did @_customerName answer?</p>
+
+        <button class="btn btn-success btn-action" @onclick='() => GoToStep3(true)'>
+            Yes — They answered
+        </button>
+        <button class="btn btn-secondary btn-action" @onclick='() => GoToStep3(false)'>
+            No — No answer
+        </button>
+
+        <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _step = 1'>
+            ← Back
+        </button>
+    }
+
+    else if (_step == 3 && _answered == true)
+    {
+        <span class="step-badge">Step 3 of 3</span>
+        <p class="call-question">How did the call go?</p>
+
+        <button class="btn btn-success btn-action" disabled="@_submitting"
+                @onclick='() => Submit("Answered_Available")'>
+            Available — Call went well
+        </button>
+        <button class="btn btn-warning btn-action" disabled="@_submitting"
+                @onclick='() => Submit("Answered_NotAvailable")'>
+            Not Available — Will call back
+        </button>
+
+        <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _step = 2'>
+            ← Back
+        </button>
+    }
+
+    else if (_step == 3 && _answered == false)
+    {
+        <span class="step-badge">Step 3 of 3</span>
+        <p class="call-question">What happened?</p>
+
+        <button class="btn btn-primary btn-action" disabled="@_submitting"
+                @onclick='() => Submit("NotAnswered_VoicemailLeft")'>
+            Voicemail Left
+        </button>
+        <button class="btn btn-warning btn-action" disabled="@_submitting"
+                @onclick='() => Submit("NotAnswered_NoVoicemail")'>
+            No Voicemail — Rang out
+        </button>
+        <button class="btn btn-danger btn-action" disabled="@_submitting"
+                @onclick='() => Submit("NotAnswered_VoicemailFull")'>
+            Voicemail Full
+        </button>
+
+        <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _step = 2'>
+            ← Back
+        </button>
+    }
+
+    @if (_submitting)
+    {
+        <div class="text-center mt-3">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="text-muted small mt-2">Logging call...</p>
+        </div>
+    }
+
+    @if (_error != null)
+    {
+        <div class="alert alert-danger mt-3 py-2 small">
+            @_error
+            <button class="btn btn-sm btn-outline-danger ms-2" @onclick='() => _error = null'>Dismiss</button>
+        </div>
+    }
+
+</div>
+
+@code {
+    private int     _step          = 1;
+    private bool?   _answered;
+    private string  _customerName  = string.Empty;
+    private string  _phoneNumber   = string.Empty;
+    private string? _validationError;
+    private string? _error;
+    private bool    _submitting;
+
+    private void GoToStep2()
+    {
+        if (string.IsNullOrWhiteSpace(_customerName) || string.IsNullOrWhiteSpace(_phoneNumber))
+        {
+            _validationError = "Please fill in both Customer Name and Phone Number.";
+            return;
+        }
+        _validationError = null;
+        _step = 2;
+    }
+
+    private void GoToStep3(bool answered)
+    {
+        _answered = answered;
+        _step = 3;
+    }
+
+    private async Task Submit(string outcome)
+    {
+        _submitting = true;
+        _error      = null;
+        try
+        {
+            var success = await ApiService.CreateCallLogAsync(new CreateCallLogRequest
+            {
+                CustomerName = _customerName,
+                PhoneNumber  = _phoneNumber,
+                Outcome      = outcome
+            });
+
+            if (success)
+                Nav.NavigateTo("/");
+            else
+                _error = "The server returned an error. Please try again.";
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to submit: {ex.Message}";
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+}

@@ -1,0 +1,83 @@
+/* ── Identity area ──────────────────────────────────── */
+.identity-area {
+    position: relative;
+}
+
+.identity-name {
+    color: #d0d0ff;
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+
+/* ── Dropdown ──────────────────────────────────────── */
+.identity-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 220px;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .15);
+    padding: 0.4rem 0;
+    z-index: 200;
+}
+
+.identity-option {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    font-size: 0.88rem;
+    color: #1a1a2e;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.identity-option:hover:not(:disabled) {
+    background: #f0f0ff;
+}
+
+.identity-option:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+
+.identity-option--admin {
+    font-weight: 700;
+}
+
+/* ── Admin inline login ────────────────────────────── */
+.admin-login-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.75rem;
+}
+
+.admin-label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    color: #1a1a2e;
+}
+
+.admin-login-row .form-control {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ── Dropdown error ────────────────────────────────── */
+.dropdown-error {
+    padding: 0.35rem 1rem;
+    font-size: 0.78rem;
+    color: #e50000;
+}
+
+/* ── Divider ───────────────────────────────────────── */
+.dropdown-divider {
+    margin: 0.3rem 0;
+    border-top: 1px solid #dee2e6;
+}

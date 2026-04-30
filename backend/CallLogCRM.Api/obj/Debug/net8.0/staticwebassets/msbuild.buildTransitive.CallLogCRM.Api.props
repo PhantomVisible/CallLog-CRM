@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/CallLogCRM.Api.props" />
+</Project>

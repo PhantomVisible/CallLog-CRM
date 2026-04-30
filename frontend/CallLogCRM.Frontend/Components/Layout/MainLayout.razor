@@ -1,0 +1,188 @@
+@inherits LayoutComponentBase
+@inject ApiService Api
+@inject AuthenticationStateProvider AuthProvider
+
+<CascadingAuthenticationState>
+<div class="layout-wrapper">
+    <header class="app-header d-flex justify-content-between align-items-center">
+        <a href="/" class="header-brand">CallLog CRM</a>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="identity-area d-flex align-items-center gap-2">
+                    <span class="identity-name">@context.User.Identity?.Name</span>
+                    <button class="btn btn-sm btn-outline-light" @onclick="HandleLogout">
+                        Déconnexion
+                    </button>
+                </div>
+            </Authorized>
+
+            <NotAuthorized>
+                <div class="identity-area position-relative">
+                    <button class="btn btn-sm btn-outline-light"
+                            @onclick="ToggleDropdown">
+                        Vous êtes qui ?
+                    </button>
+
+                    @if (_showDropdown)
+                    {
+                        <div class="identity-dropdown">
+                            @foreach (var closer in _closers)
+                            {
+                                <button class="identity-option"
+                                        disabled="@_loading"
+                                        @onclick="() => SelectCloser(closer)">
+                                    @closer
+                                </button>
+                            }
+
+                            <hr class="dropdown-divider" />
+
+                            @if (!_showAdminInput)
+                            {
+                                <button class="identity-option identity-option--admin"
+                                        @onclick="() => _showAdminInput = true">
+                                    Bachir
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="admin-login-row">
+                                    <span class="admin-label">Bachir</span>
+                                    <input type="password"
+                                           class="form-control form-control-sm"
+                                           placeholder="Mot de passe"
+                                           @bind="_adminPassword"
+                                           @onkeydown="HandleAdminKeyDown"
+                                           disabled="@_loading" />
+                                    <button class="btn btn-sm btn-primary"
+                                            disabled="@_loading"
+                                            @onclick="AdminLogin">
+                                        Valider
+                                    </button>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(_error))
+                            {
+                                <div class="dropdown-error">@_error</div>
+                            }
+                        </div>
+                    }
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </header>
+
+    <main class="app-main">
+        @Body
+    </main>
+</div>
+</CascadingAuthenticationState>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">X</a>
+</div>
+
+@code {
+    // ── Dropdown state ───────────────────────────────────
+    private bool   _showDropdown;
+    private bool   _showAdminInput;
+    private string _adminPassword = string.Empty;
+    private string _error         = string.Empty;
+    private bool   _loading;
+
+    private static readonly string[] _closers =
+    [
+        "Hayat Mahir",
+        "Amel K",
+        "Sakina Slimani",
+        "Kowsar Abdi",
+        "Jennifer",
+        "Batoul",
+        "Ines",
+        "Amel"
+    ];
+
+    private void ToggleDropdown()
+    {
+        _showDropdown   = !_showDropdown;
+        _showAdminInput = false;
+        _adminPassword  = string.Empty;
+        _error          = string.Empty;
+    }
+
+    // ── Closer (passwordless) ────────────────────────────
+    private async Task SelectCloser(string name)
+    {
+        _loading = true;
+        _error   = string.Empty;
+
+        try
+        {
+            var result = await Api.SelectCloserAsync(name);
+            if (result is not null)
+            {
+                await ((CustomAuthStateProvider)AuthProvider)
+                    .MarkUserAsAuthenticated(result.Token);
+                _showDropdown = false;
+            }
+            else
+            {
+                _error = "Échec de connexion.";
+            }
+        }
+        catch
+        {
+            _error = "Erreur réseau.";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    // ── Admin (password) ─────────────────────────────────
+    private async Task AdminLogin()
+    {
+        _loading = true;
+        _error   = string.Empty;
+
+        try
+        {
+            var result = await Api.AdminLoginAsync("Bachir", _adminPassword);
+            if (result is not null)
+            {
+                await ((CustomAuthStateProvider)AuthProvider)
+                    .MarkUserAsAuthenticated(result.Token);
+                _showDropdown = false;
+            }
+            else
+            {
+                _error = "Mot de passe invalide.";
+            }
+        }
+        catch
+        {
+            _error = "Erreur réseau.";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task HandleAdminKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await AdminLogin();
+    }
+
+    // ── Logout ───────────────────────────────────────────
+    private async Task HandleLogout()
+    {
+        await ((CustomAuthStateProvider)AuthProvider).Logout();
+    }
+}

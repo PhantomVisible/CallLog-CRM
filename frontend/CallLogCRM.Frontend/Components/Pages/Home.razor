@@ -1,0 +1,116 @@
+@page "/"
+@rendermode InteractiveServer
+@inject ApiService ApiService
+@inject NavigationManager Nav
+
+<PageTitle>CallLog CRM</PageTitle>
+
+<div class="home-container">
+
+    <div class="hero-section">
+        <h1>CallLog CRM</h1>
+        <p>Log your call outcomes in seconds.</p>
+        <button class="btn btn-primary btn-hero" @onclick="StartCall">
+            Start Call
+        </button>
+    </div>
+
+    <hr class="section-divider" />
+
+    <div>
+        <div class="history-header">
+            <h6 class="mb-0 fw-bold text-uppercase text-muted" style="letter-spacing:.05em">Recent Calls</h6>
+            <button class="btn btn-sm btn-outline-secondary" @onclick="LoadLogs" disabled="@_loading">
+                Refresh
+            </button>
+        </div>
+
+        @if (_loading)
+        {
+            <div class="text-center py-4">
+                <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            </div>
+        }
+        else if (_error != null)
+        {
+            <div class="alert alert-danger py-2 small">@_error</div>
+        }
+        else if (_logs.Count == 0)
+        {
+            <p class="text-muted text-center py-4 small">No calls logged yet. Hit Start Call to begin.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Outcome</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in _logs.OrderByDescending(l => l.CreatedAt))
+                        {
+                            <tr>
+                                <td class="fw-medium">@log.CustomerName</td>
+                                <td class="text-muted small">@log.PhoneNumber</td>
+                                <td>
+                                    <span class="outcome-badge @OutcomeCss(log.Outcome)">
+                                        @FormatOutcome(log.Outcome)
+                                    </span>
+                                </td>
+                                <td class="text-muted small">
+                                    @log.CreatedAt.ToLocalTime().ToString("MMM d, HH:mm")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<CallLog> _logs    = new();
+    private bool          _loading = true;
+    private string?       _error;
+
+    protected override async Task OnInitializedAsync() => await LoadLogs();
+
+    private async Task LoadLogs()
+    {
+        _loading = true;
+        _error   = null;
+        try
+        {
+            _logs = await ApiService.GetCallLogsAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = $"Could not load call history: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void StartCall() => Nav.NavigateTo("/call");
+
+    private static string FormatOutcome(string outcome) => outcome switch
+    {
+        "Answered_Available"        => "Answered — Available",
+        "Answered_NotAvailable"     => "Answered — Not Available",
+        "NotAnswered_VoicemailLeft" => "No Answer — Voicemail Left",
+        "NotAnswered_NoVoicemail"   => "No Answer — No Voicemail",
+        "NotAnswered_VoicemailFull" => "No Answer — Voicemail Full",
+        _                           => outcome
+    };
+
+    private static string OutcomeCss(string outcome) =>
+        outcome.StartsWith("Answered") ? "outcome-answered" : "outcome-not-answered";
+}
