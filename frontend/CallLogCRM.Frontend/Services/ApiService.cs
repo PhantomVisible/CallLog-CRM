@@ -46,13 +46,32 @@ public class ApiService
         return await response.Content.ReadFromJsonAsync<AuthResponse>();
     }
 
+    // ── Reservations ─────────────────────────────────────
+
+    /// <summary>GET /api/reservations/mine — all reservations for the authenticated closer.</summary>
+    public async Task<List<CallReservation>> GetMyReservationsAsync()
+    {
+        await AttachTokenAsync();
+        return await _http.GetFromJsonAsync<List<CallReservation>>("api/reservations/mine") ?? [];
+    }
+
+    /// <summary>GET /api/reservations/{id} — single reservation details.</summary>
+    public async Task<CallReservation?> GetReservationAsync(Guid id)
+    {
+        await AttachTokenAsync();
+        var response = await _http.GetAsync($"api/reservations/{id}");
+        if (!response.IsSuccessStatusCode)
+            return null;
+        return await response.Content.ReadFromJsonAsync<CallReservation>();
+    }
+
     // ── Call Logs ─────────────────────────────────────────
 
     // GET /api/calllogs
     public async Task<List<CallLog>> GetCallLogsAsync()
     {
         await AttachTokenAsync();
-        return await _http.GetFromJsonAsync<List<CallLog>>("api/calllogs") ?? new();
+        return await _http.GetFromJsonAsync<List<CallLog>>("api/calllogs") ?? [];
     }
 
     // POST /api/calllogs

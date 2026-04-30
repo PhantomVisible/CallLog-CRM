@@ -125,3 +125,5 @@
 /home/phantomvisible/Documents/GitHub/CallLog-CRM/backend/CallLogCRM.Api/bin/Debug/net8.0/Newtonsoft.Json.dll
 /home/phantomvisible/Documents/GitHub/CallLog-CRM/backend/CallLogCRM.Api/bin/Debug/net8.0/System.Management.dll
 /home/phantomvisible/Documents/GitHub/CallLog-CRM/backend/CallLogCRM.Api/bin/Debug/net8.0/runtimes/win/lib/net7.0/System.Management.dll
+/home/phantomvisible/Documents/GitHub/CallLog-CRM/backend/CallLogCRM.Api/bin/Debug/net8.0/google-credentials.json
+/home/phantomvisible/Documents/GitHub/CallLog-CRM/backend/CallLogCRM.Api/obj/Debug/net8.0/CallLogCRM.Api.sourcelink.json

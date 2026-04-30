@@ -66,6 +66,9 @@ builder.Services.AddSingleton<ISmsService, SmsService>();
 // Scoped lifetime matches AppDbContext (one instance per HTTP request).
 builder.Services.AddScoped<ICallLogService, CallLogService>();
 
+// Google Sheet writeback — pushes call outcomes back to the "Statut Call" column.
+builder.Services.AddScoped<IGoogleSheetsWritebackService, GoogleSheetsWritebackService>();
+
 // Background sync — fetches daily call assignments from Google Sheets.
 builder.Services.AddHostedService<GoogleSheetsSyncService>();
 

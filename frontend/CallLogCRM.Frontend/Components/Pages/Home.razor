@@ -7,91 +7,157 @@
 
 <div class="home-container">
 
-    <div class="hero-section">
-        <h1>CallLog CRM</h1>
-        <p>Log your call outcomes in seconds.</p>
-        <button class="btn btn-primary btn-hero" @onclick="StartCall">
-            Start Call
-        </button>
-    </div>
-
-    <hr class="section-divider" />
-
-    <div>
-        <div class="history-header">
-            <h6 class="mb-0 fw-bold text-uppercase text-muted" style="letter-spacing:.05em">Recent Calls</h6>
-            <button class="btn btn-sm btn-outline-secondary" @onclick="LoadLogs" disabled="@_loading">
-                Refresh
-            </button>
-        </div>
-
-        @if (_loading)
-        {
-            <div class="text-center py-4">
-                <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+    <AuthorizeView>
+        <!-- ── Not logged in ──────────────────────────── -->
+        <NotAuthorized>
+            <div class="hero-section">
+                <h1>Bienvenue sur CallLog CRM</h1>
+                <p class="text-muted">
+                    Sélectionnez votre identité en haut à droite pour voir votre queue d'appels.
+                </p>
             </div>
-        }
-        else if (_error != null)
-        {
-            <div class="alert alert-danger py-2 small">@_error</div>
-        }
-        else if (_logs.Count == 0)
-        {
-            <p class="text-muted text-center py-4 small">No calls logged yet. Hit Start Call to begin.</p>
-        }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Customer</th>
-                            <th>Phone</th>
-                            <th>Outcome</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var log in _logs.OrderByDescending(l => l.CreatedAt))
-                        {
+        </NotAuthorized>
+
+        <!-- ── Logged in ──────────────────────────────── -->
+        <Authorized>
+            <div class="hero-section">
+                <h1>Ma Queue d'Appels</h1>
+                <p>Bonjour, <strong>@context.User.Identity?.Name</strong> 👋</p>
+            </div>
+
+            <hr class="section-divider" />
+
+            @if (_loading)
+            {
+                <div class="text-center py-4">
+                    <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                </div>
+            }
+            else if (_error is not null)
+            {
+                <div class="alert alert-danger py-2 small">@_error</div>
+            }
+            else if (_reservations.Count == 0)
+            {
+                <p class="text-muted text-center py-4 small">
+                    Aucune réservation assignée. Revenez plus tard ou contactez votre admin.
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <td class="fw-medium">@log.CustomerName</td>
-                                <td class="text-muted small">@log.PhoneNumber</td>
-                                <td>
-                                    <span class="outcome-badge @OutcomeCss(log.Outcome)">
-                                        @FormatOutcome(log.Outcome)
-                                    </span>
-                                </td>
-                                <td class="text-muted small">
-                                    @log.CreatedAt.ToLocalTime().ToString("MMM d, HH:mm")
-                                </td>
+                                <th>Client</th>
+                                <th>Téléphone</th>
+                                <th>Rendez-vous</th>
+                                <th>Source</th>
+                                <th></th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in _reservations)
+                            {
+                                <tr>
+                                    <td class="fw-medium">@r.CustomerName</td>
+                                    <td class="text-muted small">@r.PhoneNumber</td>
+                                    <td class="small">
+                                        @r.AppointmentDate.ToLocalTime().ToString("dd MMM yyyy")
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary bg-opacity-25 text-dark">
+                                            @r.Source
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-primary"
+                                                @onclick="() => StartCall(r.Id)">
+                                            Appeler
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            <hr class="section-divider" />
+
+            <!-- ── Recent Call History ─────────────────── -->
+            <div>
+                <div class="history-header">
+                    <h6 class="mb-0 fw-bold text-uppercase text-muted" style="letter-spacing:.05em">
+                        Historique Récent
+                    </h6>
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="LoadAll" disabled="@_loading">
+                        Rafraîchir
+                    </button>
+                </div>
+
+                @if (_logs.Count == 0)
+                {
+                    <p class="text-muted text-center py-3 small">Aucun appel enregistré.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Téléphone</th>
+                                    <th>Résultat</th>
+                                    <th>Heure</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var log in _logs)
+                                {
+                                    <tr>
+                                        <td class="fw-medium">@log.CustomerName</td>
+                                        <td class="text-muted small">@log.PhoneNumber</td>
+                                        <td>
+                                            <span class="outcome-badge @OutcomeCss(log.Outcome)">
+                                                @FormatOutcome(log.Outcome)
+                                            </span>
+                                        </td>
+                                        <td class="text-muted small">
+                                            @log.CreatedAt.ToLocalTime().ToString("dd MMM, HH:mm")
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
-        }
-    </div>
+        </Authorized>
+    </AuthorizeView>
+
 </div>
 
 @code {
-    private List<CallLog> _logs    = new();
-    private bool          _loading = true;
-    private string?       _error;
+    private List<CallReservation> _reservations = [];
+    private List<CallLog>         _logs         = [];
+    private bool                  _loading      = true;
+    private string?               _error;
 
-    protected override async Task OnInitializedAsync() => await LoadLogs();
+    protected override async Task OnInitializedAsync() => await LoadAll();
 
-    private async Task LoadLogs()
+    private async Task LoadAll()
     {
         _loading = true;
         _error   = null;
         try
         {
-            _logs = await ApiService.GetCallLogsAsync();
+            _reservations = await ApiService.GetMyReservationsAsync();
+            _logs         = await ApiService.GetCallLogsAsync();
         }
         catch (Exception ex)
         {
-            _error = $"Could not load call history: {ex.Message}";
+            _error = $"Impossible de charger les données : {ex.Message}";
         }
         finally
         {
@@ -99,15 +165,17 @@
         }
     }
 
-    private void StartCall() => Nav.NavigateTo("/call");
+    private void StartCall(Guid reservationId) => Nav.NavigateTo($"/call/{reservationId}");
+
+    // ── Helpers ──────────────────────────────────────────
 
     private static string FormatOutcome(string outcome) => outcome switch
     {
-        "Answered_Available"        => "Answered — Available",
-        "Answered_NotAvailable"     => "Answered — Not Available",
-        "NotAnswered_VoicemailLeft" => "No Answer — Voicemail Left",
-        "NotAnswered_NoVoicemail"   => "No Answer — No Voicemail",
-        "NotAnswered_VoicemailFull" => "No Answer — Voicemail Full",
+        "Answered_Available"        => "Répondu — Disponible",
+        "Answered_NotAvailable"     => "Répondu — Pas Disponible",
+        "NotAnswered_VoicemailLeft" => "Pas Répondu — Messagerie",
+        "NotAnswered_NoVoicemail"   => "Pas Répondu — Aucun message",
+        "NotAnswered_VoicemailFull" => "Pas Répondu — Messagerie Pleine",
         _                           => outcome
     };
 

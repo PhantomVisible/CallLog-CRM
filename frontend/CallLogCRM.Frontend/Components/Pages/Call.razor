@@ -1,4 +1,4 @@
-@page "/call"
+@page "/call/{ReservationId:guid?}"
 @rendermode InteractiveServer
 @inject ApiService ApiService
 @inject NavigationManager Nav
@@ -7,93 +7,109 @@
 
 <div class="call-container">
 
-    @if (_step == 1)
+    @if (_loadingReservation)
     {
-        <span class="step-badge">Step 1 of 3</span>
-        <p class="call-question">Who are you calling?</p>
+        <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            <p class="text-muted small mt-2">Chargement de la réservation…</p>
+        </div>
+    }
+    else if (_step == 1)
+    {
+        <span class="step-badge">Étape 1 sur 3</span>
+        <p class="call-question">Qui appelez-vous ?</p>
 
         <div class="mb-3">
-            <label class="form-label fw-semibold">Customer Name</label>
+            <label class="form-label fw-semibold">Nom du client</label>
             <input class="form-control form-control-lg"
                    @bind="_customerName"
                    @bind:event="oninput"
-                   placeholder="Full name" />
+                   placeholder="Nom complet"
+                   readonly="@_prefilled" />
         </div>
         <div class="mb-3">
-            <label class="form-label fw-semibold">Phone Number</label>
+            <label class="form-label fw-semibold">Numéro de téléphone</label>
             <input class="form-control form-control-lg"
                    @bind="_phoneNumber"
                    @bind:event="oninput"
-                   placeholder="+1 555 000 0000"
-                   type="tel" />
+                   placeholder="+33 6 00 00 00 00"
+                   type="tel"
+                   readonly="@_prefilled" />
         </div>
 
-        @if (_validationError != null)
+        @if (_validationError is not null)
         {
             <div class="alert alert-warning py-2 small">@_validationError</div>
         }
 
         <button class="btn btn-primary btn-action mt-1" @onclick="GoToStep2">
-            Next →
+            Suivant →
         </button>
+
+        @if (_prefilled)
+        {
+            <p class="text-muted small mt-2">
+                Pré-rempli depuis la réservation. <a href="/call" class="text-decoration-underline">Saisir manuellement</a>
+            </p>
+        }
     }
 
     else if (_step == 2)
     {
-        <span class="step-badge">Step 2 of 3</span>
-        <p class="call-question">Did @_customerName answer?</p>
+        <span class="step-badge">Étape 2 sur 3</span>
+        <p class="call-question">@_customerName a répondu ?</p>
 
         <button class="btn btn-success btn-action" @onclick='() => GoToStep3(true)'>
-            Yes — They answered
+            Oui — A répondu
         </button>
         <button class="btn btn-secondary btn-action" @onclick='() => GoToStep3(false)'>
-            No — No answer
+            Non — Pas de réponse
         </button>
 
         <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _step = 1'>
-            ← Back
+            ← Retour
         </button>
     }
 
     else if (_step == 3 && _answered == true)
     {
-        <span class="step-badge">Step 3 of 3</span>
-        <p class="call-question">How did the call go?</p>
+        <span class="step-badge">Étape 3 sur 3</span>
+        <p class="call-question">Comment s'est passé l'appel ?</p>
 
         <button class="btn btn-success btn-action" disabled="@_submitting"
                 @onclick='() => Submit("Answered_Available")'>
-            Available — Call went well
+            Disponible — Appel réussi
         </button>
         <button class="btn btn-warning btn-action" disabled="@_submitting"
                 @onclick='() => Submit("Answered_NotAvailable")'>
-            Not Available — Will call back
+            Pas Disponible — Rappeler plus tard
         </button>
 
         <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _step = 2'>
-            ← Back
+            ← Retour
         </button>
     }
 
     else if (_step == 3 && _answered == false)
     {
-        <span class="step-badge">Step 3 of 3</span>
-        <p class="call-question">What happened?</p>
+        <span class="step-badge">Étape 3 sur 3</span>
+        <p class="call-question">Que s'est-il passé ?</p>
 
         <button class="btn btn-primary btn-action" disabled="@_submitting"
                 @onclick='() => Submit("NotAnswered_VoicemailLeft")'>
-            Voicemail Left
+            Messagerie Laissée
         </button>
         <button class="btn btn-warning btn-action" disabled="@_submitting"
                 @onclick='() => Submit("NotAnswered_NoVoicemail")'>
-            No Voicemail — Rang out
+            Pas de Messagerie — A Sonné
         </button>
         <button class="btn btn-danger btn-action" disabled="@_submitting"
                 @onclick='() => Submit("NotAnswered_VoicemailFull")'>
-            Voicemail Full
+            Messagerie Pleine
         </button>
 
         <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _step = 2'>
-            ← Back
+            ← Retour
         </button>
     }
 
@@ -101,34 +117,63 @@
     {
         <div class="text-center mt-3">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="text-muted small mt-2">Logging call...</p>
+            <p class="text-muted small mt-2">Enregistrement…</p>
         </div>
     }
 
-    @if (_error != null)
+    @if (_error is not null)
     {
         <div class="alert alert-danger mt-3 py-2 small">
             @_error
-            <button class="btn btn-sm btn-outline-danger ms-2" @onclick='() => _error = null'>Dismiss</button>
+            <button class="btn btn-sm btn-outline-danger ms-2" @onclick='() => _error = null'>Fermer</button>
         </div>
     }
 
 </div>
 
 @code {
-    private int     _step          = 1;
+    [Parameter] public Guid? ReservationId { get; set; }
+
+    private int     _step               = 1;
     private bool?   _answered;
-    private string  _customerName  = string.Empty;
-    private string  _phoneNumber   = string.Empty;
+    private string  _customerName       = string.Empty;
+    private string  _phoneNumber        = string.Empty;
     private string? _validationError;
     private string? _error;
     private bool    _submitting;
+    private bool    _prefilled;
+    private bool    _loadingReservation;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ReservationId is null) return;
+
+        _loadingReservation = true;
+        try
+        {
+            var reservation = await ApiService.GetReservationAsync(ReservationId.Value);
+            if (reservation is not null)
+            {
+                _customerName = reservation.CustomerName;
+                _phoneNumber  = reservation.PhoneNumber;
+                _prefilled    = true;
+            }
+        }
+        catch
+        {
+            // If fetching fails, user can still type manually.
+        }
+        finally
+        {
+            _loadingReservation = false;
+        }
+    }
 
     private void GoToStep2()
     {
         if (string.IsNullOrWhiteSpace(_customerName) || string.IsNullOrWhiteSpace(_phoneNumber))
         {
-            _validationError = "Please fill in both Customer Name and Phone Number.";
+            _validationError = "Veuillez remplir le nom du client et le numéro de téléphone.";
             return;
         }
         _validationError = null;
@@ -157,11 +202,11 @@
             if (success)
                 Nav.NavigateTo("/");
             else
-                _error = "The server returned an error. Please try again.";
+                _error = "Le serveur a renvoyé une erreur. Veuillez réessayer.";
         }
         catch (Exception ex)
         {
-            _error = $"Failed to submit: {ex.Message}";
+            _error = $"Échec de l'envoi : {ex.Message}";
         }
         finally
         {

@@ -6,7 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CallLogCRM.Api.Services;
 
-public class CallLogService(AppDbContext db, ISmsService sms) : ICallLogService
+public class CallLogService(
+    AppDbContext db,
+    ISmsService sms,
+    IGoogleSheetsWritebackService sheetsWriteback) : ICallLogService
 {
     public async Task<CallLog> CreateCallLogAsync(CreateCallLogDto dto, Guid userId)
     {
@@ -27,6 +30,20 @@ public class CallLogService(AppDbContext db, ISmsService sms) : ICallLogService
         if (message is not null)
             sms.SendSms(dto.PhoneNumber, message);
 
+        // ── Google Sheet writeback ──────────────────────────
+        // Find the matching reservation so we can grab the email for row lookup.
+        var reservation = await db.CallReservations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r =>
+                r.PhoneNumber == dto.PhoneNumber && r.AssignedUserId == userId);
+
+        var statusText = FormatOutcome(dto.Outcome);
+        var email = reservation?.Email ?? string.Empty;
+
+        // Fire-and-forget style: the writeback service catches its own exceptions
+        // so it never breaks the main call-log flow.
+        _ = sheetsWriteback.UpdateCallStatusAsync(dto.PhoneNumber, email, statusText);
+
         return log;
     }
 
@@ -43,5 +60,15 @@ public class CallLogService(AppDbContext db, ISmsService sms) : ICallLogService
         CallOutcome.Answered_NotAvailable     => "As discussed, we will call you back later.",
         CallOutcome.Answered_Available        => null,
         _                                     => null
+    };
+
+    private static string FormatOutcome(CallOutcome outcome) => outcome switch
+    {
+        CallOutcome.Answered_Available        => "Répondu — Disponible",
+        CallOutcome.Answered_NotAvailable     => "Répondu — Pas Disponible",
+        CallOutcome.NotAnswered_VoicemailLeft => "Pas Répondu — Messagerie Laissée",
+        CallOutcome.NotAnswered_NoVoicemail   => "Pas Répondu — Pas de Messagerie",
+        CallOutcome.NotAnswered_VoicemailFull => "Pas Répondu — Messagerie Pleine",
+        _                                     => outcome.ToString()
     };
 }
