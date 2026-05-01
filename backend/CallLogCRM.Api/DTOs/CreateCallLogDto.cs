@@ -10,7 +10,6 @@ public class CreateCallLogDto
     public string CustomerName { get; set; } = string.Empty;
 
     [Required]
-    [Phone]
     public string PhoneNumber { get; set; } = string.Empty;
 
     [Required]

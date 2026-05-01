@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets/CallLogCRM.Frontend.bundle.scp.css"
     },
     {
+      "Id": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/FORMULE-EXCELLENCE.pdf",
+      "PackagePath": "staticwebassets/FORMULE-EXCELLENCE.pdf"
+    },
+    {
       "Id": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/app.css",
       "PackagePath": "staticwebassets/app.css"
     },

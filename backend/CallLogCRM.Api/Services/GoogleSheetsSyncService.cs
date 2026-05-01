@@ -132,8 +132,8 @@ public sealed class GoogleSheetsSyncService : BackgroundService
         var userMap = users.ToDictionary(u => u.CloserName, u => u.Id,
             StringComparer.OrdinalIgnoreCase);
 
-        var inserted = 0;
-        var skipped  = 0;
+        var pending = new List<CallReservation>();
+        var skipped = 0;
 
         foreach (var row in rows)
         {
@@ -231,31 +231,48 @@ public sealed class GoogleSheetsSyncService : BackgroundService
 
             // Rows with missing or unparseable dates are stored with DateTime.MinValue.
             // The frontend renders these as "À définir" so the row remains clickable.
-            var appointmentDate = TryParseDate(dateRaw, out var parsed)
-                ? parsed
+            var appointmentDate = TryParseDate(dateRaw, out var parsedDate)
+                ? parsedDate
                 : DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
 
-            // ── STEP 5: insert (table was purged above — no duplicate check needed) ─
-            db.CallReservations.Add(new CallReservation
+            pending.Add(new CallReservation
             {
                 AssignedUserId  = userId,
                 CustomerName    = customerName,
                 PhoneNumber     = phone,
                 Email           = email,
                 AppointmentDate = appointmentDate,
-                Source          = string.IsNullOrEmpty(source) ? "GoogleSheet" : source,
+                Source          = string.IsNullOrEmpty(source) ? "N/A" : source,
                 CurrentStatus   = currentStatus
             });
-
-            inserted++;
         }
 
-        if (inserted > 0)
+        // ── STEP 5: deduplicate by name ──────────────────────────────────────
+        // When a prospect submits the form twice, one row often has a valid phone
+        // and the other has "Inconnu".  Group by normalised name and keep the row
+        // with the best phone number; fall back to the first row if both are equal.
+        var toInsert = pending
+            .GroupBy(r => r.CustomerName.Trim().ToLowerInvariant())
+            .Select(g => g
+                .OrderByDescending(r =>
+                    !string.IsNullOrWhiteSpace(r.PhoneNumber) && r.PhoneNumber != "Inconnu" ? 1 : 0)
+                .First())
+            .ToList();
+
+        var duplicatesRemoved = pending.Count - toInsert.Count;
+        if (duplicatesRemoved > 0)
+            _logger.LogInformation("Deduplication removed {Count} duplicate row(s).", duplicatesRemoved);
+
+        // ── STEP 6: insert ───────────────────────────────────────────────────
+        foreach (var reservation in toInsert)
+            db.CallReservations.Add(reservation);
+
+        if (toInsert.Count > 0)
             await db.SaveChangesAsync(ct);
 
         _logger.LogInformation(
-            "Sync complete: {Inserted} inserted, {Skipped} skipped.",
-            inserted, skipped);
+            "Sync complete: {Inserted} inserted, {Skipped} skipped, {Dupes} deduplicated.",
+            toInsert.Count, skipped, duplicatesRemoved);
     }
 
     // ── Date parsing helper ─────────────────────────────────────
@@ -263,10 +280,12 @@ public sealed class GoogleSheetsSyncService : BackgroundService
     /// <summary>
     /// Attempts to parse the date string from the sheet.  Handles common French
     /// formats (dd/MM/yyyy, dd-MM-yyyy) and ISO (yyyy-MM-dd), plus datetime variants.
+    /// ISO 8601 UTC strings from Google Sheets (e.g. "2026-04-14T09:30:00.000Z") are
+    /// handled by the RoundtripKind fallback which preserves both the time and UTC kind.
     /// </summary>
     private static bool TryParseDate(string raw, out DateTime result)
     {
-        // Try explicit French formats first, then fall back to generic parsing.
+        // Try explicit French/date-only formats first.
         string[] formats =
         [
             "dd/MM/yyyy",
@@ -284,16 +303,17 @@ public sealed class GoogleSheetsSyncService : BackgroundService
                 System.Globalization.DateTimeStyles.None,
                 out result))
         {
-            // Normalize to UTC midnight so date comparisons are stable.
-            result = DateTime.SpecifyKind(result.Date, DateTimeKind.Utc);
+            // These formats carry no timezone info — treat them as UTC.
+            result = DateTime.SpecifyKind(result, DateTimeKind.Utc);
             return true;
         }
 
-        // Last resort: let .NET try to figure it out.
+        // RoundtripKind recognises the trailing 'Z' as UTC, preserving the time portion.
+        // ToUniversalTime() normalises any offset-aware variants (e.g. +01:00) to UTC.
         if (DateTime.TryParse(raw, System.Globalization.CultureInfo.InvariantCulture,
-                System.Globalization.DateTimeStyles.None, out result))
+                System.Globalization.DateTimeStyles.RoundtripKind, out result))
         {
-            result = DateTime.SpecifyKind(result.Date, DateTimeKind.Utc);
+            result = result.ToUniversalTime();
             return true;
         }
 

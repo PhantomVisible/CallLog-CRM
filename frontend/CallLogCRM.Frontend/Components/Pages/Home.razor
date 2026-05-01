@@ -66,7 +66,7 @@
                                     <td class="small">
                                         @(r.AppointmentDate == DateTime.MinValue
                                             ? "À définir"
-                                            : r.AppointmentDate.ToLocalTime().ToString("dd MMM yyyy"))
+                                            : r.AppointmentDate.ToLocalTime().ToString("dd MMM yyyy 'à' HH:mm"))
                                     </td>
                                     <td>
                                         <span class="badge bg-secondary bg-opacity-25 text-dark small">
@@ -121,6 +121,7 @@
                                     <th>Téléphone</th>
                                     <th>Résultat</th>
                                     <th>Heure</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -136,6 +137,13 @@
                                         </td>
                                         <td class="text-muted small">
                                             @log.CreatedAt.ToLocalTime().ToString("dd MMM, HH:mm")
+                                        </td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-secondary border-0"
+                                                    @onclick="() => EditCallLog(log.Id)"
+                                                    title="Modifier l'entrée">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 }
@@ -200,4 +208,11 @@
 
     private static string OutcomeCss(string outcome) =>
         outcome.StartsWith("Answered") ? "outcome-answered" : "outcome-not-answered";
+
+    // ── History actions ──────────────────────────────
+    private void EditCallLog(Guid id)
+    {
+        // TODO: navigate to an edit page or open a modal for the selected call log.
+        Nav.NavigateTo($"/call-log/{id}/edit");
+    }
 }

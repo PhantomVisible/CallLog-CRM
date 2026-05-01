@@ -28,6 +28,15 @@
                    readonly="@_prefilled" />
         </div>
         <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <input class="form-control form-control-lg"
+                   @bind="_email"
+                   @bind:event="oninput"
+                   placeholder="email@exemple.com"
+                   type="email"
+                   readonly="@_prefilled" />
+        </div>
+        <div class="mb-3">
             <label class="form-label fw-semibold">Numéro de téléphone</label>
             <input class="form-control form-control-lg"
                    @bind="_phoneNumber"
@@ -46,12 +55,8 @@
             Suivant →
         </button>
 
-        @if (_prefilled)
-        {
-            <p class="text-muted small mt-2">
-                Pré-rempli depuis la réservation. <a href="/call" class="text-decoration-underline">Saisir manuellement</a>
-            </p>
-        }
+        <button type="button" class="btn btn-link text-muted text-decoration-none p-0 mt-3"
+                @onclick="GoBack">&lt;-- retour</button>
     }
 
     else if (_step == 2)
@@ -59,16 +64,656 @@
         <span class="step-badge">Étape 2 sur 3</span>
         <p class="call-question">@_customerName a répondu ?</p>
 
-        <button class="btn btn-success btn-action" @onclick='() => GoToStep3(true)'>
-            Oui — A répondu
-        </button>
-        <button class="btn btn-secondary btn-action" @onclick='() => GoToStep3(false)'>
-            Non — Pas de réponse
-        </button>
+        @if (_scriptPhase == 1)
+        {
+            <div class="card shadow-sm mb-4">
+                <div class="card-body script-box">
+                    <h5 class="text-primary fw-bold mb-3">1/12- CALL &amp; ÉNERGIE +++</h5>
+                    <p><strong>(Prospect) :</strong> - "ALLO"</p>
+                    <p><strong>(Vous) :</strong> - Oui @_customerName ?</p>
+                    <p><strong>(Prospect) :</strong> - Oui ?</p>
+                    <p><strong>(Vous) :</strong> - Bonjour ! C'est <em>[Ton Prénom]</em> au téléphone, je travaille avec Assia de Joli Gâteau, comment ça va ?</p>
+                    <p><strong>(Prospect) :</strong> - Ça va merci et vous ?</p>
+                    <p><strong>(Vous) :</strong> - Je suis en pleine forme ! Merci beaucoup !</p>
+                </div>
+            </div>
 
-        <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _step = 1'>
-            ← Retour
-        </button>
+            <div class="d-flex justify-content-center gap-3">
+                <button class="btn btn-success btn-action flex-fill" @onclick="ProspectAnswered">
+                    Oui — A répondu
+                </button>
+                <button class="btn btn-secondary btn-action flex-fill" @onclick="ProspectNaPasRepondu">
+                    Non — Pas de réponse
+                </button>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _step = 1'>
+                ← Retour
+            </button>
+        }
+        else if (_scriptPhase == 2)
+        {
+            <div class="card shadow-sm mb-4">
+                <div class="card-body script-box">
+                    <h5 class="text-primary fw-bold mb-3">2/12- TUTOIEMENT/VOUVOIEMENT :</h5>
+                    <p><strong>(Vous) :</strong> - Euh dites-moi avant de démarrer, j'aurais une première question ! Ça me parait assez important : Est-ce qu'on se permet plutôt le tutoiement ou le vouvoiement ?</p>
+                    <p class="text-muted">...</p>
+                    <p><strong>Tutoiement :</strong> Ça me convient, je te suis <strong>@_customerName</strong> ! C'est parfait !</p>
+                    <p><strong>Vouvoiement :</strong> Entendu, oui avec plaisir !</p>
+
+                    <hr class="my-4" />
+
+                    <h5 class="text-primary fw-bold mb-3">3/12- CADRE :</h5>
+                    <p><strong>(Vous) :</strong> - OKAY <em>(sourire)</em>. Je suis <strong>[Ton Prénom]</strong>, Coach et collaboratrice sur Joli Gâteau où nous accompagnons les personnes à devenir Cake designer professionnel, étape par étape.</p>
+                    <p>Notre objectif à travers cet appel est de définir si cette offre te correspond et si tu y es éligible - auquel cas je validerais ta candidature. C'est ensemble qu'on va faire ce call ! Donc dis-moi, est-ce que tu as bien, comme convenu, 45 minutes / 1 heure devant toi ?</p>
+                    <p><strong>(Prospect) :</strong> - Oui oui</p>
+                    <p><strong>(Vous) :</strong> - Super ! Tu es bien au calme, on peut y aller <em>(avec de l'entrain)</em> ?</p>
+                    <p><strong>(Prospect) :</strong> - Oui</p>
+                    <p><strong>(Vous) :</strong> - GÉNIAL, donc je vais t'expliquer comment va se passer cet appel, <em>(d'une voix claire et précise, je pose ma structure, leadership)</em>.</p>
+                    <p>Dans un premier temps, je vais commencer par te demander de te présenter, car…. pour l'instant, tout ce que je sais de toi, pour être transparent(e), c'est les réponses au formulaire que tu as rempli. Donc le but de la première partie de cet appel sera vraiment d'apprendre à te connaître davantage, te connaître un peu plus en profondeur, ainsi que ton projet.</p>
+                    <p><em>(Exprimez-vous calmement et clairement, vous posez le cadre ICI)</em>.</p>
+                    <p>Est-ce que cela te convient ?</p>
+                    <p>Avant de démarrer, tu me confirmes que tu es bien la seule décisionnaire de ton projet ?</p>
+                    <p><strong>Revalider :</strong> On est d'accord qu'à l'issue de cet appel tu seras à même d'intégrer l'accompagnement si tu y es éligible ?</p>
+                    <p>Très bien <strong>@_customerName</strong>, alors c'est parti ! Je te laisse te présenter en 1 phrase ou 2 et m'en dire un peu plus sur toi. D'ailleurs, qu'est-ce qui fait que tu as rempli ce formulaire et que tu as réservé ton appel avec nous ?</p>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-success flex-fill" disabled="@_submitting"
+                        @onclick="ClientSouhaiteContinuer">
+                    Oui - la cliente souhaite continuer
+                </button>
+                <button class="btn btn-warning flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    Non - la cliente n'a pas le temps (reporté)
+                </button>
+                <button class="btn btn-danger flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    La cliente n'est plus intéressée
+                </button>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 1'>
+                ← Retour
+            </button>
+        }
+        else if (_scriptPhase == 3)
+        {
+            <div class="card shadow-sm mb-3">
+                <div class="card-body script-box">
+                    <h5 class="text-primary fw-bold mb-3">4/12- IDENTIFIER LE PROBLÈME (DES FAITS)</h5>
+                    <p><em>(Détecter et identifier le PROBLÈME fait(s) ou croyance(s) avant de passer à la suite, prenez le temps nécessaire).</em></p>
+                    <p>Voici un groupe de questions (en choisir quelques-unes) :</p>
+                    <ul>
+                        <li>Quelle est la personne, la chose ou l'élément que tu fuis dans ta vie ?</li>
+                        <li>Qu'est-ce qui te déplaît le plus actuellement dans ta vie ?</li>
+                        <li>Quelle est la chose que tu aimerais absolument changer dans ta vie ?</li>
+                        <li>Qu'est ce qui t'empêche aujourd'hui de te lancer ?</li>
+                        <li>Si instinctivement là tout de suite je te pose la question "Qu'est ce qui te stresse actuellement dans ta vie" que me répondrais-tu ? Sans réfléchir comme ça spontanément !</li>
+                        <li>Qu'est-ce que tu changerais dans ta vie, là maintenant, pour être enfin épanouie ?</li>
+                        <li>Pourquoi veux-tu te lancer en tant que cake designer ? En quoi cela changerait ta vie ?</li>
+                    </ul>
+                    <p><strong>(Vous) :</strong> - Donc si j'ai bien compris le(s) problème(s) aujourd'hui c'est ……, c'est bien cela ?</p>
+
+                    <hr class="my-4" />
+
+                    <h5 class="text-primary fw-bold mb-3">5/12- LA DOULEUR PROFONDE (DES ÉMOTIONS)</h5>
+                    <p><strong>(Vous) :</strong> - OKAY <strong>@_customerName</strong>, en tout cas je te remercie pour ta transparence et ton honnêteté. Ça m'a permis de bien cerner l'importance et l'urgence de changement dans ta vie aujourd'hui.</p>
+                    <p><strong>(Vous) :</strong> - Donc tu m'as dit que …..… engendrait une grosse partie de ton mal-être, et que ça t'empêche de t'épanouir, c'est bien ça ?</p>
+                    <p><em>(Projeter le prospect dans sa douleur) :</em></p>
+                    <ul>
+                        <li>D'après toi, quelles sont les répercussions de ……. dans ta vie ?</li>
+                        <li>Dans quelle situation as-tu vécu "CETTE DOULEUR" dans ta vie ?</li>
+                        <li>Sur une échelle de 0 à 10, à combien évalues-tu l'impact de cette douleur dans ta vie ?</li>
+                        <li>Et… combien de temps tu penses que tu peux continuer encore comme ça ?</li>
+                    </ul>
+                    <p><strong>(Vous) :</strong> - Mais… Imagine dans 5 ans <strong>@_customerName</strong>, disons que tu n'es pas passée à l'action et que tu traînes encore ce …….., comment te sentirais-tu ?</p>
+                    <p><strong>(Vous) :</strong> - Si j'ai bien entendu, tu as [LIRE LES NOTES] qui te pose souci pour te lancer aujourd'hui. Et bien ne t'en fais pas, je suis là pour en parler et justement te permettre d'éclaircir tout cela.</p>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-secondary">Problème Principal (Faits) :</label>
+                    <textarea class="form-control" rows="2" @bind="_notesFaits"
+                              placeholder="Ex: Manque de temps, covid, peur..."></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-secondary">Douleur Profonde (Émotions) :</label>
+                    <textarea class="form-control" rows="2" @bind="_notesEmotions"
+                              placeholder="Ex: Frustration, impression de rater sa vie..."></textarea>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-success flex-fill" disabled="@_submitting"
+                        @onclick="DouleurIdentifiee">
+                    Douleur identifiée — Passer à la suite
+                </button>
+                <button class="btn btn-warning flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    Objection bloquante
+                </button>
+                <button class="btn btn-danger flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    Disqualifiée — Pas de réel problème
+                </button>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 2'>
+                ← Retour
+            </button>
+        }
+        else if (_scriptPhase == 4)
+        {
+            <div class="card shadow-sm mb-4">
+                <div class="card-body script-box">
+                    <h5 class="text-primary fw-bold mb-3">6/12- OBJECTIF + PROJECTION</h5>
+                    <p><em>(Projeter et rassurer le prospect que l'accompagnement d'ASSIA est la solution à son problème. Vous êtes confiant(e)).</em></p>
+
+                    <p><strong>(Vous) :</strong> - Et maintenant, imagine-toi dans 1 an, tu es passée à l'action et tu as atteint tes objectifs, comment te sentirais-tu ?</p>
+                    <ul>
+                        <li>Dis-moi, ce serait quoi pour toi une journée type !</li>
+                        <li>D'ailleurs quels sont tes objectifs et tes ambitions ?</li>
+                        <li>Côté objectifs financiers, combien aimerais-tu gagner / mois ?</li>
+                        <li>Et pour toi, en quoi avoir ton entreprise dans le Cake Design va faire accélérer l'atteinte de tes objectifs ?</li>
+                        <li>C'est pour cela que tu as voulu réserver cet appel avec nous ?</li>
+                    </ul>
+
+                    <div class="alert alert-info my-3">
+                        <strong>Histoire d'Assia :</strong> "Assia justement, a fait son premier cake design pour son fils le jour de son anniversaire, elle a été prise d'une grande passion. Elle était juriste à ce moment-là, mais elle a voulu changer de vie, travailler de chez elle, gérer son emploi du temps afin d'être disponible pour sa famille. Et depuis qu'elle s'est lancée, le marché du Cake Design est en constante évolution, le marché en France évolue de plus de 20% par an."
+                    </div>
+
+                    <p><strong>(Vous) :</strong> - Donc laisse-moi te dire que ton objectif de … est LARGEMENT atteignable. Sois-en certaine ! Najia que nous accompagnons les a atteints avec notre accompagnement.</p>
+                    <p><strong>(Prospect) :</strong> - Génial..</p>
+
+                    <hr class="my-4" />
+
+                    <h5 class="text-primary fw-bold mb-3">7/12- QUALIFICATION DU PROSPECT</h5>
+                    <p><strong>(Vous) :</strong> - Je vois sur le questionnaire que tu avais rempli que tu gagnes X€ / mois et que tu as X€ d'épargne, c'est bien ça ?</p>
+
+                    <p><strong>Si OUI :</strong> "C'est ça."</p>
+                    <p><strong>Si NON (J'ai rien) :</strong> - Est-ce que tu as quelqu'un (conjoint, amis, parents,..) qui te soutient ou peut te soutenir financièrement dans ton projet ?</p>
+
+                    <div class="alert alert-danger my-3">
+                        <strong>ATTENTION DISQUALIFICATION :</strong> Si la personne n'a VRAIMENT personne pour l'aider financièrement :<br />
+                        <strong>(Vous) :</strong> - "Parce que pour être honnête et transparente, sans finance, nous ne pourrons pas t'aider dans ton projet professionnel malheureusement." <em>(Donner des conseils pour mettre de l'argent de côté / trouver un travail).</em>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-success flex-fill" disabled="@_submitting"
+                        @onclick="ProspectQualifie">
+                    Oui — Qualifiée (Passer à la suite)
+                </button>
+                <button class="btn btn-warning flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    Objection bloquante
+                </button>
+                <button class="btn btn-danger flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    Non — DISQUALIFIÉE (Pas de budget)
+                </button>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 3'>
+                ← Retour
+            </button>
+        }
+        else if (_scriptPhase == 5)
+        {
+            <div class="card shadow-sm mb-4">
+                <div class="card-body script-box">
+                    <h5 class="text-primary fw-bold mb-3">9/12- PRISE DE CONSCIENCE</h5>
+                    <p><em>(Lui faire dire qu'elle veut se lancer dès aujourd'hui et préparer les objections).</em></p>
+
+                    <p><strong>(Vous) :</strong> - Ça me fait plaisir nos échanges ! Pleins de motivations ! ahaha. Du coup.. à quel moment as-tu pris conscience que le cake design était LA solution pour atteindre tes objectifs et changer [LIRE DOULEUR] dans ta vie ?</p>
+                    <p><strong>(Vous) :</strong> - Et quand est-ce que tu aimerais commencer ces changements et lancer ton entreprise pour faire tes premières ventes ?</p>
+
+                    <p><em>(D'une voix énergique, souriante, positive, tu crois en elle !)</em></p>
+                    <p><strong>(Vous) :</strong> - Haha super, je te sens motivée dans ton échelle de motivation, sur 1 à 10, à combien tu te sens, là, maintenant, pour activer le changement et te lancer ?</p>
+
+                    <ul>
+                        <li><strong>Si 10/10 :</strong> Génial, c'est avec des personnes comme toi qui correspondent à nos critères de sélection !</li>
+                        <li><strong>Si 9/10 (ou moins) :</strong> OK ! SUPER WAHOOU, et comment pourrions-nous t'aider à atteindre les 10/10 ? ... D'accord, donc si nous t'aidons sur [SA RÉPONSE], on est d'accord que tu serais à 10/10 et c'est donc ce que tu recherches en nous appelant ?</li>
+                    </ul>
+
+                    <div class="alert alert-info my-4 border-info">
+                        <h6 class="fw-bold text-info-emphasis mb-2">TON RÉCAPITULATIF (À LIRE) :</h6>
+                        <p class="mb-1">"Je vais faire un petit récapitulatif de ta situation avec tous les éléments que tu m'as transmis :"</p>
+                        <ul class="mb-0">
+                            <li><strong>Faits (Problème) :</strong> <span class="fw-bold">@(_notesFaits ?? "...")</span></li>
+                            <li><strong>Émotions (Douleur) :</strong> <span class="fw-bold">@(_notesEmotions ?? "...")</span></li>
+                        </ul>
+                        <p class="mt-2 mb-0">"Et que l'accompagnement Joli Gâteau est tout ce que tu recherches pour te lancer AUJOURD'HUI."</p>
+                    </div>
+
+                    <h6 class="fw-bold">Inversion du risque :</h6>
+                    <ul>
+                        <li>Super, si on te propose de rejoindre le mentoring aujourd'hui, tu mettras toutes les actions nécessaires pour atteindre tes objectifs ?</li>
+                        <li>Et on est bien d'accord que tu es la seule décisionnaire de ton business ? <em>(Si elle hésite, voir section "Mon Mari" ci-dessous)</em></li>
+                        <li>En vue de la limite de nos places : Pourquoi devrait-on t'intégrer dans l'accompagnement ?</li>
+                    </ul>
+
+                    <hr class="my-4" />
+
+                    <div class="alert alert-warning mb-3">
+                        <h5 class="fw-bold text-warning-emphasis mb-3">OBJECTIONS EN MI-CHEMIN : MON MARI / ASSOCIÉ</h5>
+                        <p><em>(Si elle n'est pas seule à prendre la décision) :</em></p>
+                        <p><strong>(Vous) :</strong> - Comment vit ton mari le fait de te voir "DOULEUR" au quotidien ?</p>
+                        <p><strong>(Vous) :</strong> - Je ressens à ta voix qu'il te soutient et je te rejoins là-dessus car moi aussi mon mari m'a soutenue quand je me suis lancée pour Joli Gâteau ! Et c'était très important pour moi. J'imagine qu'il a comme toi envie d'une vie qui t'inspire davantage, que tu sois épanouie. Ça ne doit pas être évident de te voir "DOULEURS" tous les jours. Que pense-t-il de cet appel que nous avons ensemble ?</p>
+                        <p><strong>(Vous) :</strong> - Imagine que tu annonces à ton mari que tu te lances aujourd'hui pour ce projet qui te tient à cœur depuis tout ce temps, comment réagirait-il ? Qu'est-ce qu'il te dirait ?</p>
+                        <hr class="border-warning opacity-50" />
+                        <p><strong>Si elle veut ENCORE en parler à son mari :</strong></p>
+                        <ul>
+                            <li>Mettre en avant le fait que notre promotion de -500 euros est possible seulement du fait qu'elle a eu un coaching avec nous.</li>
+                            <li>Si j'ai bien entendu, tu as [FAITS CONCRETS] qui te pose souci pour te lancer aujourd'hui. Et bien ne t'en fais pas, je suis là pour en parler et justement te permettre d'éclaircir tout cela. Qui t'empêche de te lancer aujourd'hui c'est bien cela ?</li>
+                            <li>Tu penses que [CROYANCES]. Exemple : <em>"J'ai peur de ne pas finir"</em> -&gt; D'accord je comprends, ça arrive à tout le monde ! Dis-moi en plus, pourquoi perds-tu la motivation ?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-success flex-fill" disabled="@_submitting"
+                        @onclick="PriseDeConscienceValidee">
+                    Validé — suivant
+                </button>
+                <button class="btn btn-warning flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    Objection bloquante
+                </button>
+                <button class="btn btn-danger flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    Disqualifiée
+                </button>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 4'>
+                ← Retour
+            </button>
+        }
+        else if (_scriptPhase == 6)
+        {
+            <div class="card shadow-sm mb-4">
+                <div class="card-body script-box">
+                    <h5 class="text-primary fw-bold mb-3">10/12- PRISE DE CONSCIENCE ÉTAT D'ESPRIT D'UNE ENTREPRENEURE</h5>
+                    <p class="text-muted fw-bold">Débutant :</p>
+                    <p><strong>(Vous) :</strong> - Tu es consciente que devenir cake designer, c'est devenir une business woman indépendante qui vit de sa passion ?</p>
+                    <p><strong>(Prospect) :</strong> - Oui bien sûre</p>
+                    <p><strong>(Vous) :</strong> - Par contre, il va falloir travailler, les résultats ne viendront pas tout seuls. Tu es bien consciente de ça ?</p>
+                    <p><strong>(Prospect) :</strong> - Oui oui…</p>
+
+                    <hr class="my-4" />
+
+                    <h5 class="text-primary fw-bold mb-3">11/12- RARETÉ + URGENCE + PROPOSITION</h5>
+                    <p><strong>(Vous) :</strong> - Super <strong>@_customerName</strong>, Merci d'avoir répondu à toutes mes questions. Ça me permet de vraiment comprendre ta façon de penser, de cerner tes besoins et d'évaluer ton éligibilité.</p>
+                    <p><strong>(Vous) :</strong> - Est-ce que tu te sens toujours motivée ?</p>
+                    <p><strong>(Prospect) :</strong> - Oui bien sûre</p>
+
+                    <div class="alert alert-danger my-4">
+                        <h6 class="fw-bold text-danger-emphasis">ATTENTION OBJECTIONS :</h6>
+                        <p class="mb-0">SI TOUTES LES OBJECTIONS NE SONT PAS LEVÉES, C'EST LE MOMENT ! SI DES CHOSES SONT FLOUES, ON CREUSE PUIS ON ÉCLAIRCIT !</p>
+                    </div>
+
+                    <p><em>(D'une voix calme, claire et structurée) :</em></p>
+                    <p><strong>(Vous) :</strong> - OK <em>(sourire)</em>, j'ai adoré notre échange et dans ces conditions, je me porte garante pour toi.</p>
+                    <p><strong>(Vous) :</strong> - En plus avec le soutien d'Assia et tout le groupe JG, je suis sûre et certaine que tu as ce qu'une entrepreneuse a besoin pour atteindre tes objectifs de cette année.</p>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-success flex-fill" disabled="@_submitting"
+                        @onclick="PresenterOffre">
+                    Validé — Présenter l'offre
+                </button>
+                <button class="btn btn-warning flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    Objection bloquante
+                </button>
+                <button class="btn btn-danger flex-fill" disabled="@_submitting"
+                        @onclick='() => Submit("Answered_NotAvailable")'>
+                    Disqualifiée
+                </button>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 5'>
+                ← Retour
+            </button>
+        }
+        else if (_scriptPhase == 7)
+        {
+            <div class="card shadow-lg border-primary mb-4">
+                <div class="card-body script-box">
+                    <h5 class="text-primary fw-bold mb-3">12/12 - OFFRE DE NOTRE ACCOMPAGNEMENT + PRIX + BÉNÉFICES</h5>
+                    <p><em>(Annoncer le prix de manière très claire et continuer en expliquant ce que ça comprend).</em></p>
+
+                    <h6 class="fw-bold text-success mb-2">EXPLICATION DE L'OFFRE (AVEC ÉNERGIE !!!) :</h6>
+                    <a href="/FORMULE-EXCELLENCE.pdf" target="_blank"
+                       class="btn btn-outline-info w-100 mb-3 fw-bold text-start shadow-sm">
+                        <i class="bi bi-file-earmark-pdf-fill me-2 text-danger"></i>
+                        Ouvrir le programme détaillé : FORMULE EXCELLENCE (Ouvre un nouvel onglet)
+                    </a>
+                    <p><strong>(Vous) :</strong> - Notre programme se différencie vraiment des autres formations que tu peux trouver sur le WEB où tu as uniquement une série de vidéos à la Netflix sans aucun accompagnement. En fait ce que l'on propose c'est vraiment un accompagnement personnalisé où nous sommes présents à chaque étape. Tu n'auras pas le choix que de réussir. Tu n'auras plus de problème de <strong>@(_notesFaits ?? "[FREIN]")</strong>.</p>
+
+                    <p><strong>(Vous) :</strong> - À chaque étape de ton business, Assia va contrôler tout ce que tu as implémenté sur ton business de cake designer. Si quelque chose ne va pas, tu pourras nous écrire ou nous le dire lors des coachings mentor et nous travaillerons exclusivement sur ton business. Bref, nous sommes vraiment présents et disponibles pour ta réussite.</p>
+
+                    <ul class="mb-4">
+                        <li>Tu vas être accompagnée pendant 8 mois par Assia et une équipe spécialisée.</li>
+                        <li>On est présent à toutes les étapes, étape par étape et à ton rythme.</li>
+                        <li>Tu seras formée aux normes d'hygiène HACCP obligatoires.</li>
+                        <li>Tu auras des coachings tous les mois pour vérifier que tu avances bien.</li>
+                        <li>Tu pourras nous écrire par email de manière illimitée (réponse sous 24-48h).</li>
+                        <li>Tu auras des audits à chaque étape pour valider ton travail et tes BONS gâteaux.</li>
+                    </ul>
+
+                    <div class="alert alert-info">
+                        <p class="mb-0"><strong>(Vous) :</strong> - Notre accompagnement te permettra DONC de créer ton business avec un plan précis, adapté à tes objectifs, de façon concrète, claire, et précise avec pour 1 SEUL OBJECTIF : que tu atteignes tes objectifs, car <strong>TA RÉUSSITE c'est NOTRE RÉUSSITE.</strong></p>
+                    </div>
+
+                    <p><strong>(Vous) :</strong> - Est-ce que c'est bien cet accompagnement dont tu as besoin ?</p>
+                    <p><strong>(Prospect) :</strong> - Oui</p>
+                    <p><strong>(Vous) :</strong> - Et que tu vas t'engager à 100% dans le programme, suivre tous les conseils, et être présente aux coachings ?</p>
+                    <p><strong>(Prospect) :</strong> - Oui</p>
+
+                    <hr class="my-4" />
+
+                    <h4 class="text-center fw-bold text-danger mb-3">L'ANNONCE DU PRIX (D'une voix ferme sans bégayer)</h4>
+
+                    <p class="text-center fs-5"><strong>(Vous) :</strong> - L'accompagnement mentoring est à <span class="text-decoration-line-through">5000€</span> !!!</p>
+                    <p class="text-center fs-5">J'ai une EXCELLENTE nouvelle pour toi, pendant les portes ouvertes, le prix du mentoring est de <strong class="text-success fs-4">2500€</strong>.</p>
+
+                    <p class="text-muted text-center"><em>(Continuer sans s'arrêter de parler ici)</em></p>
+
+                    <p><strong>(Vous) :</strong> - Comment ça va se passer ? Je vais t'accompagner à renseigner ton nom, prénom, et tes données de facturation. Une fois que tu nous auras rejoints, l'équipe Joli Gâteau t'envoie un message de bienvenue sous 1 semaine, tu auras également l'accès aux vidéos et au mastermind.</p>
+
+                    <div class="bg-success text-white p-3 rounded text-center my-4 shadow-sm">
+                        <h5 class="fw-bold mb-1">APPEL À L'ACTION :</h5>
+                        <p class="mb-0 fs-5">"Est-ce que c'est bon, tu es prête à changer dès maintenant tout le reste de ta vie et à atteindre tes objectifs ? C'est parti ?"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <button class="btn btn-success btn-lg w-100 fw-bold shadow-sm py-3"
+                        disabled="@_submitting"
+                        @onclick="ClientAccepte">
+                    OUI — Elle accepte (Passer à l'encaissement)
+                </button>
+            </div>
+
+            <h5 class="fw-bold text-danger mt-2 mb-3">BIBLIOTHÈQUE D'OBJECTIONS</h5>
+            <p class="text-muted small">Cliquez sur l'objection soulevée par la cliente pour afficher le script correspondant :</p>
+
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <button class="btn @(_activeObjection == "PRIX"        ? "btn-danger"       : "btn-outline-danger")"  @onclick='() => ShowObjection("PRIX")'>Prix trop cher</button>
+                <button class="btn @(_activeObjection == "BUDGET"      ? "btn-danger"       : "btn-outline-danger")"  @onclick='() => ShowObjection("BUDGET")'>Pas le budget</button>
+                <button class="btn @(_activeObjection == "FINANCES"    ? "btn-danger"       : "btn-outline-danger")"  @onclick='() => ShowObjection("FINANCES")'>Regarder mes finances</button>
+                <button class="btn @(_activeObjection == "REFLECHIR"   ? "btn-warning"      : "btn-outline-warning")" @onclick='() => ShowObjection("REFLECHIR")'>Besoin de réfléchir</button>
+                <button class="btn @(_activeObjection == "COMPETENCES" ? "btn-warning"      : "btn-outline-warning")" @onclick='() => ShowObjection("COMPETENCES")'>Par où commencer / Pas faire</button>
+                <button class="btn @(_activeObjection == "PEUR"        ? "btn-warning"      : "btn-outline-warning")" @onclick='() => ShowObjection("PEUR")'>Peur (Inconnu/Échec)</button>
+                <button class="btn @(_activeObjection == "MARI"        ? "btn-info"         : "btn-outline-info")"    @onclick='() => ShowObjection("MARI")'>Mon Mari / Associé</button>
+                <button class="btn @(_activeObjection == "TEMPS"       ? "btn-info"         : "btn-outline-info")"    @onclick='() => ShowObjection("TEMPS")'>Manque de temps</button>
+                <button class="btn @(_activeObjection == "DOUTE"       ? "btn-info"         : "btn-outline-info")"    @onclick='() => ShowObjection("DOUTE")'>Sûre que ça va marcher ?</button>
+                <button class="btn @(_activeObjection == "GARANTIE"    ? "btn-dark"         : "btn-outline-dark")"    @onclick='() => ShowObjection("GARANTIE")'>Dernière Carte (Garantie)</button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_activeObjection))
+            {
+                <div class="card border-danger shadow-sm mb-4">
+                    <div class="card-body bg-light">
+                        @switch (_activeObjection)
+                        {
+                            case "PRIX":
+                                <h6 class="fw-bold text-danger">OBJECTION : LE PRIX EST TROP CHER</h6>
+                                <ul>
+                                    <li>En dehors du prix, on est d'accord que c'est vraiment l'offre qui te convient et qu'il te faut ?</li>
+                                    <li>Es-tu en accord sur la valeur de notre accompagnement par rapport à tous les renseignements que j'ai pu te fournir ?</li>
+                                </ul>
+                                <p class="text-muted small"><em>(Actions : Décortiquer ses revenus, Mettre en avant l'auto-financement (500 à 1000€/mois), CPF, Investissement, 2 métiers transmis).</em></p>
+                                break;
+
+                            case "BUDGET":
+                                <h6 class="fw-bold text-danger">OBJECTION : PAS LE BUDGET / TROP GROSSE SOMME</h6>
+                                <ul>
+                                    <li>Est-ce que ça serait plus confortable pour toi d'échelonner le paiement en X fois ?</li>
+                                    <li>Hmm, tu me parlais de ton mari, on peut peut-être voir s'il a du CPF pour l'utiliser, qu'en penses-tu ?</li>
+                                </ul>
+                                <p class="text-muted small"><em>(Actions : Proposer paiement en plusieurs fois, Décortiquer revenus, Investissement).</em></p>
+                                break;
+
+                            case "FINANCES":
+                                <h6 class="fw-bold text-danger">OBJECTION : FAUT QUE JE REGARDE MES FINANCES</h6>
+                                <ul>
+                                    <li>As-tu envie qu'on le fasse maintenant ensemble ?</li>
+                                    <li>En fait je te propose cela, car je vois que ce projet te tient vraiment à cœur... J'ai VRAIMENT envie de t'aider à trouver des solutions.</li>
+                                    <li>Qu'est-ce qui t'inquiète financièrement si tu te lances maintenant ?</li>
+                                </ul>
+                                break;
+
+                            case "REFLECHIR":
+                                <h6 class="fw-bold text-warning">OBJECTION : BESOIN D'UN PEU DE TEMPS / RÉFLÉCHIR</h6>
+                                <ul>
+                                    <li>Je suis vraiment là pour t'aider, à quoi vas-tu réfléchir dis-moi ?</li>
+                                    <li>Sur quel point as-tu envie de réflexion ?</li>
+                                    <li>Lorsque tu vas prendre le temps de réfléchir justement, que vas-tu te poser comme questions ?</li>
+                                </ul>
+                                <p><strong>Liens utiles :</strong> <a href="https://fr.trustpilot.com/review/joligateau.fr" target="_blank">Avis Trustpilot</a></p>
+                                break;
+
+                            case "COMPETENCES":
+                                <h6 class="fw-bold text-warning">OBJECTIONS : PAR OÙ COMMENCER / JE NE SAIS PAS FAIRE</h6>
+                                <p>Tu es guidée 100% du temps, où que tu sois dans ton apprentissage, Assia va te guider à chaque étape tu ne seras jamais seule... comme si "elle était à tes côtés dans ta cuisine".</p>
+                                <p>Pour t'imaginer tout ce que je viens de te dire, imagine Assia, et les membres de l'équipe, nous te tenons la main durant ces 8 mois et on ne te lâchera pas tant que tu ne voleras pas de tes propres ailes !</p>
+                                <p class="text-muted small"><em>(Rappel : Si peur de ne pas y arriver, enlever cette croyance en lui demandant un exemple concret où elle a déjà vécu cette situation et a réussi).</em></p>
+                                break;
+
+                            case "PEUR":
+                                <h6 class="fw-bold text-warning">OBJECTIONS : PEUR DE L'INCONNU / ÉCHEC / ESCROQUERIE</h6>
+                                <ul>
+                                    <li>De quoi as-tu peur dans l'inconnu ? / C'est quoi pour toi l'échec ?</li>
+                                    <li>Qu'est-ce qui te fait penser que tu pourrais te faire escroquer ? / Sur quoi se basent tes inquiétudes ?</li>
+                                    <li>Qu'est-ce qui se passe à l'intérieur de toi ?</li>
+                                </ul>
+                                <p>Mettre en avant qu'elle est accompagnée à 100%, quoi qu'il arrive. Faire plonger dans un souvenir de réussite.</p>
+                                break;
+
+                            case "MARI":
+                                <h6 class="fw-bold text-info">OBJECTIONS : MON MARI / ASSOCIÉ</h6>
+                                <ul>
+                                    <li>Comment vit ton mari le fait de te voir "<strong>@(_notesEmotions ?? "dans cette situation")</strong>" au quotidien ?</li>
+                                    <li>Je ressens à ta voix qu'il te soutient... Ça ne doit pas être évident de te voir avec ces douleurs tous les jours.</li>
+                                    <li>Imagine que tu annonces à ton mari que tu te lances aujourd'hui... comment réagirait-il ?</li>
+                                </ul>
+                                <p class="text-muted small"><em>(Si elle veut encore lui en parler : Mettre en avant la promotion de -500€ possible seulement suite à cet appel).</em></p>
+                                break;
+
+                            case "TEMPS":
+                                <h6 class="fw-bold text-info">OBJECTIONS : MANQUE DE TEMPS</h6>
+                                <ul>
+                                    <li>Pourquoi penses-tu manquer de temps ? / Combien d'heures pourrais-tu consacrer par semaine ?</li>
+                                    <li>Même si tu manques de temps, qu'est-ce qui te motive à te lancer aujourd'hui ?</li>
+                                    <li>Qu'est-ce que tu peux supprimer, faire moins ou regrouper pour te dégager du temps ?</li>
+                                </ul>
+                                <p class="text-muted small"><em>(Mettre en avant : Accompagnement dispo H24 en vidéo, Mastermind, Contact direct).</em></p>
+                                break;
+
+                            case "DOUTE":
+                                <h6 class="fw-bold text-info">OBJECTION : Comment être sûre que ça va fonctionner ?</h6>
+                                <ul>
+                                    <li>Qu'est-ce qui te fait dire que cela ne marcherait pas pour toi ? / Qu'entends-tu par fonctionner ?</li>
+                                    <li>Pour rebondir, quand est-ce que tu as pu ressentir des peurs et finalement cela a fonctionné pour toi ?</li>
+                                </ul>
+                                <p class="text-muted small"><em>(Créer un lien d'identification : "Moi aussi...". Mettre en avant la reconversion d'Assia).</em></p>
+                                break;
+
+                            case "GARANTIE":
+                                <h6 class="fw-bold text-dark">OBJECTION : DERNIÈRE CARTE / DERNIÈRE CHANCE</h6>
+                                <p>Écoute <strong>@_customerName</strong>, ce que je te propose, c'est que je fasse un pas vers toi et toi tu fais un pas vers moi en retour ? Ça te convient ?</p>
+                                <p>C'est de prendre les risques à ta place. C'est-à-dire que tu nous rejoins aujourd'hui... Et si à la fin de l'accompagnement, ton entreprise n'est pas rentable : <strong>nous te remboursons IN-TÉ-GRA-LE-MENT !</strong> (C'est écrit noir sur blanc dans les CGV).</p>
+                                break;
+                        }
+
+                        <div class="alert alert-success mt-3 mb-0">
+                            <h6 class="fw-bold mb-1">APPEL À L'ACTION :</h6>
+                            @if (_activeObjection == "GARANTIE")
+                            {
+                                <p class="mb-0">"Est-ce que ça t'aiderait justement si je fais ce premier pas vers toi ? À te rassurer et à passer à l'action ensemble ?"</p>
+                            }
+                            else
+                            {
+                                <p class="mb-0">"Est-ce que tu es prête à faire ce premier investissement et démarrer un changement de vie et supprimer cette douleur (<strong>@(_notesEmotions ?? "ta situation actuelle")</strong>) pour toujours ? Allez c'est bon, tu es prête, c'est parti ?"</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 6'>
+                ← Retour
+            </button>
+
+            <div class="mt-5">
+                <hr class="border-danger opacity-25 mb-4" />
+                <p class="text-center text-muted small mb-2">Si après toutes les étapes d'objections la cliente refuse définitivement :</p>
+                <button class="btn btn-danger btn-lg w-100 fw-bold shadow-sm py-3" @onclick="ClientRefuse">
+                    NON — Aucune solution n'est possible (Refus définitif)
+                </button>
+            </div>
+        }
+        else if (_scriptPhase == 8)
+        {
+            <div class="card shadow-lg border-success mb-4">
+                <div class="card-body script-box">
+                    <h4 class="text-success fw-bold mb-3">ENCAISSEMENT DU CLIENT</h4>
+
+                    <div class="alert alert-success bg-success text-white border-0 shadow-sm mb-4">
+                        <h6 class="fw-bold mb-1">Rappel Commission :</h6>
+                        <p class="mb-0">Vous êtes rémunérée davantage si le paiement se fait en 1 à 2 fois que 5 à 8 fois, ne l'oubliez pas ;)</p>
+                    </div>
+
+                    <h5 class="fw-bold mt-4 mb-3 text-dark">LA SEULE MÉTHODE : Full CB par Systeme.io</h5>
+                    <p class="text-muted">LIEN À ENVOYER EN FONCTION DE L'ANALYSE QUE VOUS AVEZ FAITE DE SES FINANCES :</p>
+
+                    <div class="d-flex flex-column gap-2 mb-4">
+                        <a href="https://www.joligateau-formation.fr/inscription1x" target="_blank"
+                           class="btn btn-outline-success btn-lg text-start fw-bold shadow-sm">
+                            2500€ en 1x
+                        </a>
+                        <a href="https://www.joligateau-formation.fr/inscription2x" target="_blank"
+                           class="btn btn-outline-success btn-lg text-start fw-bold shadow-sm">
+                            2550€ en 2x (1275€ / mois)
+                        </a>
+                        <a href="https://www.joligateau-formation.fr/inscription4x" target="_blank"
+                           class="btn btn-outline-success btn-lg text-start fw-bold shadow-sm">
+                            2660€ en 4x (665€ / mois)
+                        </a>
+                        <a href="https://www.joligateau-formation.fr/inscription8x" target="_blank"
+                           class="btn btn-outline-success btn-lg text-start fw-bold shadow-sm">
+                            2760€ en 8x (345€ / mois)
+                        </a>
+                    </div>
+
+                    <div class="alert alert-warning border-warning shadow-sm mb-4">
+                        <h6 class="fw-bold text-warning-emphasis mb-2">Attention : Si la CB ne passe pas sur système.io</h6>
+                        <p class="mb-2 text-dark">En dernier recours, vous pouvez transmettre le lien Stripe suivant :</p>
+                        <a href="https://buy.stripe.com/8wM3cBd9L1d72isaEF" target="_blank"
+                           class="btn btn-warning w-100 fw-bold shadow-sm">
+                            Lien de Secours Stripe : 2760€ en 8x (345€)
+                        </a>
+                    </div>
+
+                    <p class="fs-5 text-center mt-4"><strong>(Vous) :</strong> - C'est bon j'ai reçu. <em>(Laisser parler)</em></p>
+
+                    <hr class="my-4" />
+
+                    <h6 class="fw-bold text-secondary mb-3">LES LIENS INDISPENSABLES :</h6>
+                    <a href="https://www.joligateau-formation.fr/formation" target="_blank"
+                       class="btn btn-outline-primary w-100 text-start shadow-sm">
+                        Présentation complète de l'accompagnement
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label class="form-label fw-bold text-success">
+                    Notes d'encaissement (Obligatoire) :
+                </label>
+                <textarea class="form-control mb-3 border-success shadow-sm" rows="2"
+                          placeholder="Ex: La cliente a choisi le paiement en 4x, validé sur Systeme.io..."
+                          @bind="_paymentNotes" @bind:event="oninput"></textarea>
+
+                <button class="btn btn-success btn-lg w-100 fw-bold shadow"
+                        disabled="@(string.IsNullOrWhiteSpace(_paymentNotes) || _submitting)"
+                        @onclick='() => Submit("Answered_Available")'>
+                    Terminer l'appel et Sauvegarder la Vente
+                </button>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 7'>
+                ← Retour
+            </button>
+        }
+        else if (_scriptPhase == 9)
+        {
+            <div class="card shadow-lg border-danger mb-4">
+                <div class="card-body script-box">
+                    <h4 class="text-danger fw-bold mb-3">REFUS DÉFINITIF</h4>
+
+                    <div class="alert alert-danger bg-danger text-white border-0 shadow-sm mb-4">
+                        <h6 class="fw-bold mb-1">ÉTAPE 4 : ON FERME LA PORTE DÉFINITIVEMENT</h6>
+                        <p class="mb-0">On ne fait jamais ça, mais je te laisse 1 semaine pour trouver le financement pour rejoindre le mentoring parce que je te sens motivée. Comme ça on va voir si tu es vraiment déterminée, au-delà, tu ne pourras plus nous rejoindre.</p>
+                    </div>
+
+                    <p><strong>(Vous) :</strong> - Écoute <strong>@_customerName</strong>, j'entends que tu n'as pas les moyens de financer ton accompagnement aujourd'hui, ou que ce n'est pas le bon moment pour toi. Dans ce cas, tu ne peux pas rentrer dans le programme.</p>
+                    <p><strong>(Vous) :</strong> - Je te souhaite quand même une excellente continuation et beaucoup de réussite dans tes projets futurs. Au revoir !</p>
+
+                    <hr class="my-4" />
+
+                    <button class="btn btn-danger btn-lg w-100 fw-bold shadow" disabled="@_submitting"
+                            @onclick='() => Submit("Answered_NotAvailable")'>
+                        Terminer l'appel et Sauvegarder (Pas de Vente)
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 7'>
+                ← Retour
+            </button>
+        }
+        else if (_scriptPhase == 10)
+        {
+            <div class="card shadow-sm border-secondary mb-4">
+                <div class="card-body script-box text-center">
+                    <h4 class="text-secondary fw-bold mb-4">Appel sans réponse</h4>
+                    <p class="mb-4">Veuillez indiquer le résultat de cet appel pour le suivi :</p>
+
+                    <div class="d-flex flex-column gap-3 max-width-400 mx-auto">
+                        <button class="btn btn-outline-secondary btn-lg fw-bold shadow-sm"
+                                disabled="@_submitting"
+                                @onclick='() => SaveAndEndCall("Message laissé")'>
+                            Message laissé
+                        </button>
+                        <button class="btn btn-outline-secondary btn-lg fw-bold shadow-sm"
+                                disabled="@_submitting"
+                                @onclick='() => SaveAndEndCall("Pas de messagerie - A sonné")'>
+                            Pas de messagerie - A sonné
+                        </button>
+                        <button class="btn btn-outline-secondary btn-lg fw-bold shadow-sm"
+                                disabled="@_submitting"
+                                @onclick='() => SaveAndEndCall("Messagerie Pleine")'>
+                            Messagerie Pleine
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 1'>
+                ← Retour
+            </button>
+        }
     }
 
     else if (_step == 3 && _answered == true)
@@ -135,9 +780,16 @@
     [Parameter] public Guid? ReservationId { get; set; }
 
     private int     _step               = 1;
+    private int     _scriptPhase        = 1;
     private bool?   _answered;
     private string  _customerName       = string.Empty;
+    private string? _email;
     private string  _phoneNumber        = string.Empty;
+    private string? _notesFaits;
+    private string? _notesEmotions;
+    private string? _paymentNotes;
+    private string? _callStatus;
+    private string  _activeObjection     = string.Empty;
     private string? _validationError;
     private string? _error;
     private bool    _submitting;
@@ -155,6 +807,7 @@
             if (reservation is not null)
             {
                 _customerName = reservation.CustomerName;
+                _email        = reservation.Email;
                 _phoneNumber  = reservation.PhoneNumber;
                 _prefilled    = true;
             }
@@ -169,6 +822,8 @@
         }
     }
 
+    private void GoBack() => Nav.NavigateTo("/");
+
     private void GoToStep2()
     {
         if (string.IsNullOrWhiteSpace(_customerName) || string.IsNullOrWhiteSpace(_phoneNumber))
@@ -177,7 +832,26 @@
             return;
         }
         _validationError = null;
-        _step = 2;
+        _scriptPhase     = 1;
+        _step            = 2;
+    }
+
+    private void ProspectAnswered()           => _scriptPhase = 2;
+    private void ClientSouhaiteContinuer()    => _scriptPhase = 3;
+    private void DouleurIdentifiee()          => _scriptPhase = 4;
+    private void ProspectQualifie()           => _scriptPhase = 5;
+    private void PriseDeConscienceValidee()   => _scriptPhase = 6;
+    private void PresenterOffre()             => _scriptPhase = 7;
+    private void ClientAccepte()              => _scriptPhase = 8;
+    private void ClientRefuse()               => _scriptPhase = 9;
+    private void ProspectNaPasRepondu()       => _scriptPhase = 10;
+    private void ShowObjection(string key)    => _activeObjection = key;
+
+    private async Task SaveAndEndCall(string status)
+    {
+        _callStatus = status;
+        // TODO: persist _callStatus alongside the call log.
+        await Submit("NotAnswered_NoVoicemail");
     }
 
     private void GoToStep3(bool answered)

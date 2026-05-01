@@ -24,7 +24,7 @@ public class ReservationsController(AppDbContext db) : ControllerBase
             return Unauthorized();
 
         var reservations = await db.CallReservations
-            .Where(r => r.AssignedUserId == userId)
+            .Where(r => r.AssignedUserId == userId && r.CurrentStatus != "Traité")
             .OrderByDescending(r => r.AppointmentDate)
             .AsNoTracking()
             .ToListAsync();

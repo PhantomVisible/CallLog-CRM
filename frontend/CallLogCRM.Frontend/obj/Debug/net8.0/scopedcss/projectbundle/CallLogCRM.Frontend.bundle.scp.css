@@ -95,7 +95,31 @@
     color: #dc2626;
     font-weight: 500;
 }
+/* _content/CallLogCRM.Frontend/Components/Pages/Call.razor.rz.scp.css */
+.max-width-400[b-tt1n3spwqa] {
+    max-width: 400px;
+}
+
+.script-box[b-tt1n3spwqa] {
+    max-height: 50vh;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
 /* _content/CallLogCRM.Frontend/Components/Pages/Home.razor.rz.scp.css */
+/* ── Table layout ────────────────────────────────────────────────────────── */
+table[b-svx0rnrqzm] {
+    width: 100%;
+    table-layout: auto;
+}
+
+table th:nth-child(3)[b-svx0rnrqzm],
+table td:nth-child(3)[b-svx0rnrqzm] {
+    min-width: 180px;
+}
+
 /* ── Clickable queue row ─────────────────────────────────────────────────── */
 .queue-row[b-svx0rnrqzm] {
     cursor: pointer;

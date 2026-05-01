@@ -7,7 +7,7 @@ namespace CallLogCRM.Api.Services;
 
 /// <summary>
 /// Writes call outcome data back to the Google Sheet.
-/// Finds the matching row by phone number and updates the "Statut Call" column (G).
+/// Finds the matching row by email address and updates the "Statut Call" column (G).
 /// </summary>
 public sealed class GoogleSheetsWritebackService(
     IConfiguration config,
@@ -30,29 +30,28 @@ public sealed class GoogleSheetsWritebackService(
 
             if (rows is null || rows.Count == 0)
             {
-                logger.LogWarning("Sheet is empty — cannot write back status for {Phone}.", phoneNumber);
+                logger.LogWarning("Sheet is empty — cannot write back status for email={Email}.", email);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                logger.LogWarning("No email provided — cannot write back status for phone={Phone}.", phoneNumber);
                 return;
             }
 
             // 2. Find the matching row index (0-based within the fetched data, so +2 for the sheet row).
+            //    Column layout (A2:G): [0]=Source [1]=Nom [2]=Email [3]=Telephone [4]=unused [5]=Date [6]=Closer
+            //    Matching exclusively on Email (col C, index 2) — phone is unreliable ("Inconnu" fallback).
             int? matchedRowIndex = null;
+            var targetEmail = email.Trim();
             for (var i = 0; i < rows.Count; i++)
             {
-                if (rows[i].Count < 4) continue;
+                if (rows[i].Count < 3) continue;
 
-                var rowPhone = rows[i][3]?.ToString()?.Trim() ?? string.Empty;
                 var rowEmail = rows[i][2]?.ToString()?.Trim() ?? string.Empty;
 
-                // Match by phone first; fall back to email if phone is empty.
-                if (!string.IsNullOrWhiteSpace(phoneNumber) &&
-                    string.Equals(rowPhone, phoneNumber.Trim(), StringComparison.OrdinalIgnoreCase))
-                {
-                    matchedRowIndex = i;
-                    break;
-                }
-
-                if (!string.IsNullOrWhiteSpace(email) &&
-                    string.Equals(rowEmail, email.Trim(), StringComparison.OrdinalIgnoreCase))
+                if (rowEmail.Equals(targetEmail, StringComparison.OrdinalIgnoreCase))
                 {
                     matchedRowIndex = i;
                     break;
@@ -62,8 +61,7 @@ public sealed class GoogleSheetsWritebackService(
             if (matchedRowIndex is null)
             {
                 logger.LogWarning(
-                    "No matching row found in sheet for phone={Phone}, email={Email}.",
-                    phoneNumber, email);
+                    "No matching row found in sheet for email={Email}.", email);
                 return;
             }
 
@@ -85,14 +83,14 @@ public sealed class GoogleSheetsWritebackService(
             await updateRequest.ExecuteAsync();
 
             logger.LogInformation(
-                "Updated sheet row {Row} (phone={Phone}) with status '{Status}'.",
-                sheetRow, phoneNumber, status);
+                "Updated sheet row {Row} (email={Email}) with status '{Status}'.",
+                sheetRow, email, status);
         }
         catch (Exception ex)
         {
             // Never let a sheet-write failure break the main call-log flow.
             logger.LogError(ex,
-                "Failed to write back status to Google Sheet for phone={Phone}.", phoneNumber);
+                "Failed to write back status to Google Sheet for email={Email}.", email);
         }
     }
 

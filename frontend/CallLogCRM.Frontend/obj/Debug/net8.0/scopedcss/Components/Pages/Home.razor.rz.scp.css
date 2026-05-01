@@ -1,3 +1,14 @@
+/* ── Table layout ────────────────────────────────────────────────────────── */
+table[b-svx0rnrqzm] {
+    width: 100%;
+    table-layout: auto;
+}
+
+table th:nth-child(3)[b-svx0rnrqzm],
+table td:nth-child(3)[b-svx0rnrqzm] {
+    min-width: 180px;
+}
+
 /* ── Clickable queue row ─────────────────────────────────────────────────── */
 .queue-row[b-svx0rnrqzm] {
     cursor: pointer;

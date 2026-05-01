@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "w9dmAqGirvVO60e5W+f7yOlj0opsFjvWBGPMwMSo8dA=",
+  "Hash": "RdYH2jndelqW3j0xHS0nl5FakVMnbHDFttlrflHvITk=",
   "Source": "CallLogCRM.Frontend",
   "BasePath": "_content/CallLogCRM.Frontend",
   "Mode": "Default",
@@ -72,6 +72,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/app.css"
+    },
+    {
+      "Identity": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/FORMULE-EXCELLENCE.pdf",
+      "SourceId": "CallLogCRM.Frontend",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/",
+      "BasePath": "_content/CallLogCRM.Frontend",
+      "RelativePath": "FORMULE-EXCELLENCE.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/FORMULE-EXCELLENCE.pdf"
     }
   ]
 }

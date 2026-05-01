@@ -22,6 +22,15 @@ public class CallLogService(
         };
 
         db.CallLogs.Add(log);
+
+        // Mark the matching reservation as handled so it disappears from the queue.
+        var reservation = await db.CallReservations
+            .FirstOrDefaultAsync(r =>
+                r.PhoneNumber == dto.PhoneNumber && r.AssignedUserId == userId);
+
+        if (reservation is not null)
+            reservation.CurrentStatus = "Traité";
+
         await db.SaveChangesAsync();
 
         // Dispatch SMS after the record is safely persisted.
@@ -31,12 +40,6 @@ public class CallLogService(
             sms.SendSms(dto.PhoneNumber, message);
 
         // ── Google Sheet writeback ──────────────────────────
-        // Find the matching reservation so we can grab the email for row lookup.
-        var reservation = await db.CallReservations
-            .AsNoTracking()
-            .FirstOrDefaultAsync(r =>
-                r.PhoneNumber == dto.PhoneNumber && r.AssignedUserId == userId);
-
         var statusText = FormatOutcome(dto.Outcome);
         var email = reservation?.Email ?? string.Empty;
 

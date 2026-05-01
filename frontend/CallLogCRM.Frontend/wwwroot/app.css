@@ -40,8 +40,9 @@ h1:focus { outline: none; }
 
 /* ---- Home Page ---- */
 .home-container {
-    max-width: 720px;
+    max-width: 1400px;
     margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .hero-section {

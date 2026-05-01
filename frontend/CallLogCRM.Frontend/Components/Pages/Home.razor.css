@@ -1,3 +1,14 @@
+/* ── Table layout ────────────────────────────────────────────────────────── */
+table {
+    width: 100%;
+    table-layout: auto;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) {
+    min-width: 180px;
+}
+
 /* ── Clickable queue row ─────────────────────────────────────────────────── */
 .queue-row {
     cursor: pointer;
