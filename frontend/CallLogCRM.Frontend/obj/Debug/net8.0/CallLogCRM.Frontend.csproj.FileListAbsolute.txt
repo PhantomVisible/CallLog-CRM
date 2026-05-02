@@ -32,3 +32,4 @@
 /home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/CallLogCRM.Frontend.sourcelink.json
 /home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/Components/Pages/Home.razor.rz.scp.css
 /home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/Components/Pages/Call.razor.rz.scp.css
+/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/obj/Debug/net8.0/scopedcss/Components/Pages/AdminDashboard.razor.rz.scp.css

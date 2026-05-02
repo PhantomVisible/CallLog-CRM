@@ -1,13 +1,8 @@
 /* ── Table layout ────────────────────────────────────────────────────────── */
-table[b-svx0rnrqzm] {
-    width: 100%;
-    table-layout: auto;
-}
+table[b-svx0rnrqzm] { width: 100%; table-layout: auto; }
 
 table th:nth-child(3)[b-svx0rnrqzm],
-table td:nth-child(3)[b-svx0rnrqzm] {
-    min-width: 180px;
-}
+table td:nth-child(3)[b-svx0rnrqzm] { min-width: 180px; }
 
 /* ── Clickable queue row ─────────────────────────────────────────────────── */
 .queue-row[b-svx0rnrqzm] {
@@ -15,61 +10,177 @@ table td:nth-child(3)[b-svx0rnrqzm] {
     transition: background 0.1s ease;
 }
 
-.queue-row:hover[b-svx0rnrqzm] {
-    background: #f5f3ff !important; /* light indigo tint on hover */
-}
+.queue-row:hover[b-svx0rnrqzm] { background: rgba(0, 122, 255, 0.035) !important; }
 
 /* ── Status badges (CurrentStatus from Google Sheet col H) ───────────────── */
 .status-badge[b-svx0rnrqzm] {
     display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 0.25rem 0.65rem;
-    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.22rem 0.65rem;
+    border-radius: 980px;
     white-space: nowrap;
     letter-spacing: 0.02em;
     cursor: pointer;
-    transition: opacity 0.12s ease, transform 0.1s ease;
+    transition: opacity 0.12s ease;
 }
 
-.status-badge:hover[b-svx0rnrqzm] {
-    opacity: 0.82;
-    transform: scale(1.04);
+.status-badge:hover[b-svx0rnrqzm] { opacity: 0.78; }
+
+.status-call[b-svx0rnrqzm]      { background: #EBF5FF; color: #0055B3; }
+.status-vente[b-svx0rnrqzm]     { background: #D1F5D3; color: #1A7A2E; }
+.status-pas-vente[b-svx0rnrqzm] { background: #FFE5E5; color: #C0392B; }
+.status-rdv[b-svx0rnrqzm]       { background: #D6EEFF; color: #0055B3; }
+.status-rappel[b-svx0rnrqzm]    { background: #FFF3D6; color: #9A5700; }
+.status-autre[b-svx0rnrqzm]     { background: #E8E8ED; color: #3A3A3C; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Hero Login Screen
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.hero-login[b-svx0rnrqzm] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+    text-align: center;
+    padding: 2rem 1rem;
+    animation: hero-fade-in-b-svx0rnrqzm 0.5s ease;
 }
 
-/* "▶ Lancer l'appel" — default when no status yet */
-.status-call[b-svx0rnrqzm] {
-    background: #ede9fe;
-    color: #4f46e5;
-    border: 1px solid #c4b5fd;
+@keyframes hero-fade-in-b-svx0rnrqzm {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0);    }
 }
 
-/* Vente (sale confirmed) ─ green */
-.status-vente[b-svx0rnrqzm] {
-    background: #dcfce7;
-    color: #166534;
+.hero-login-title[b-svx0rnrqzm] {
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    font-weight: 800;
+    color: #1D1D1F;
+    letter-spacing: -3px;
+    line-height: 1;
+    margin-bottom: 0.6rem;
 }
 
-/* Pas de vente (no sale) ─ red */
-.status-pas-vente[b-svx0rnrqzm] {
-    background: #fee2e2;
-    color: #991b1b;
+.hero-login-sub[b-svx0rnrqzm] {
+    font-size: 1.05rem;
+    color: #86868B;
+    font-weight: 400;
+    max-width: 380px;
+    line-height: 1.5;
+    margin-bottom: 2.75rem;
 }
 
-/* RDV confirmé ─ blue */
-.status-rdv[b-svx0rnrqzm] {
-    background: #dbeafe;
-    color: #1e40af;
+.hero-connexion-btn[b-svx0rnrqzm] {
+    background: #007AFF;
+    color: #ffffff;
+    border: none;
+    border-radius: 980px;
+    padding: 0.9rem 3.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.1px;
+    box-shadow: 0 4px 24px rgba(0, 122, 255, 0.28);
+    transition: opacity 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
 }
 
-/* Rappel ─ amber */
-.status-rappel[b-svx0rnrqzm] {
-    background: #fef3c7;
-    color: #92400e;
+.hero-connexion-btn:hover[b-svx0rnrqzm] {
+    opacity: 0.88;
+    box-shadow: 0 6px 32px rgba(0, 122, 255, 0.38);
 }
 
-/* Other statuses ─ neutral */
-.status-autre[b-svx0rnrqzm] {
-    background: #f1f5f9;
-    color: #475569;
+.hero-connexion-btn:active[b-svx0rnrqzm] {
+    transform: scale(0.97);
+    box-shadow: 0 2px 12px rgba(0, 122, 255, 0.22);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Closeuse Selection Grid
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.user-grid-header[b-svx0rnrqzm] {
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+    animation: hero-fade-in-b-svx0rnrqzm 0.35s ease;
+}
+
+.user-grid-title[b-svx0rnrqzm] {
+    font-size: clamp(1.6rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: #1D1D1F;
+    letter-spacing: -1px;
+    margin-bottom: 0.3rem;
+}
+
+.user-grid-sub[b-svx0rnrqzm] {
+    font-size: 0.9rem;
+    color: #86868B;
+    margin: 0;
+}
+
+/* ── User card ───────────────────────────────────────────────────────────── */
+.user-card[b-svx0rnrqzm] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.75rem 1rem 1.25rem;
+    gap: 0.6rem;
+    text-align: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    animation: card-pop-in-b-svx0rnrqzm 0.3s ease both;
+}
+
+.user-card:hover[b-svx0rnrqzm] {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 36px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+@keyframes card-pop-in-b-svx0rnrqzm {
+    from { opacity: 0; transform: scale(0.95) translateY(8px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);   }
+}
+
+.user-card-avatar[b-svx0rnrqzm] {
+    font-size: 3.5rem;
+    color: #D1D1D6;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
+
+.user-card-name[b-svx0rnrqzm] {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1D1D1F;
+    letter-spacing: -0.2px;
+}
+
+.user-card-btn[b-svx0rnrqzm] {
+    background: rgba(0, 122, 255, 0.08);
+    color: #007AFF;
+    border: none;
+    border-radius: 980px;
+    padding: 0.42rem 1.35rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 0.25rem;
+    transition: background 0.15s ease, opacity 0.15s ease;
+    min-width: 90px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.user-card-btn:hover:not(:disabled)[b-svx0rnrqzm] {
+    background: rgba(0, 122, 255, 0.15);
+}
+
+.user-card-btn:disabled[b-svx0rnrqzm] {
+    opacity: 0.5;
+    cursor: wait;
 }

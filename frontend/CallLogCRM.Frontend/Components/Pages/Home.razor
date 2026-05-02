@@ -4,119 +4,180 @@
 @inject NavigationManager Nav
 @inject AuthenticationStateProvider AuthProvider
 
-<PageTitle>CallLog CRM</PageTitle>
+<PageTitle>Joli Gâteaux — CRM</PageTitle>
 
 <div class="home-container">
 
     <AuthorizeView>
+
         @* ── Not logged in ──────────────────────────── *@
         <NotAuthorized>
-            <div class="hero-section">
-                <h1>Bienvenue sur CallLog CRM</h1>
-                <p class="text-muted">
-                    Sélectionnez votre identité en haut à droite pour voir votre queue d'appels.
-                </p>
-            </div>
+
+            @if (!_showUserGrid)
+            {
+                @* Hero landing screen *@
+                <div class="hero-login">
+                    <h1 class="hero-login-title">Bonjour.</h1>
+                    <p class="hero-login-sub">
+                        Sélectionnez votre profil pour accéder à votre queue d'appels.
+                    </p>
+                    <button class="hero-connexion-btn" @onclick="RevealGrid">
+                        Connexion
+                    </button>
+                </div>
+            }
+            else
+            {
+                @* Closeuse selection grid *@
+                <div class="user-grid-header">
+                    <h2 class="user-grid-title">Qui êtes-vous ?</h2>
+                    <p class="user-grid-sub">Appuyez sur votre nom pour vous connecter.</p>
+                </div>
+
+                <div class="row row-cols-2 row-cols-md-4 g-4 justify-content-center">
+                    @foreach (var closeuse in _closeuses)
+                    {
+                        var name = closeuse;
+                        <div class="col">
+                            <div class="apple-card user-card">
+                                <div class="user-card-avatar">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="user-card-name">@name</div>
+                                <button class="user-card-btn"
+                                        disabled="@_loadingLogin"
+                                        @onclick="() => SelectCloser(name)">
+                                    @if (_loadingUser == name)
+                                    {
+                                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                                    }
+                                    else
+                                    {
+                                        <span>Connexion</span>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (!string.IsNullOrEmpty(_loginError))
+                {
+                    <div class="apple-alert apple-alert-danger mt-4 text-center">
+                        @_loginError
+                    </div>
+                }
+            }
+
         </NotAuthorized>
 
         @* ── Logged in ──────────────────────────────── *@
         <Authorized>
-            <div class="hero-section">
-                <h1>Ma Queue d'Appels</h1>
-                <p>Bonjour, <strong>@context.User.Identity?.Name</strong> 👋</p>
+
+            @* ── Page header ── *@
+            <div class="d-flex justify-content-between align-items-end mb-4 pt-2">
+                <div>
+                    <h1 class="fw-bolder mb-1" style="letter-spacing: -1px; color: #1D1D1F; font-size: clamp(1.75rem, 4vw, 2.25rem);">
+                        Ma Queue d'Appels
+                    </h1>
+                    <p style="color: #86868B; font-size: 0.9rem; margin: 0;">
+                        Bonjour, <strong style="color: #3A3A3C;">@context.User.Identity?.Name</strong>
+                    </p>
+                </div>
+                <button class="apple-btn-refresh" @onclick="LoadAll" disabled="@_loading">
+                    Rafraîchir
+                </button>
             </div>
 
-            <hr class="section-divider" />
-
+            @* ── Queue ── *@
             @if (_loading)
             {
-                <div class="text-center py-4">
-                    <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                <div class="text-center py-5">
+                    <div class="spinner-border" style="color: #007AFF; width: 1.5rem; height: 1.5rem;" role="status"></div>
                 </div>
             }
             else if (_error is not null)
             {
-                <div class="alert alert-danger py-2 small">@_error</div>
+                <div class="apple-alert apple-alert-danger mb-4">@_error</div>
             }
             else if (_reservations.Count == 0)
             {
-                <p class="text-muted text-center py-4 small">
-                    Aucune réservation assignée. Revenez plus tard ou contactez votre admin.
-                </p>
+                <div class="apple-card mb-4" style="padding: 2rem 1.5rem; text-align: center;">
+                    <p style="color: #86868B; font-size: 0.9rem; margin: 0;">
+                        Aucune réservation assignée. Revenez plus tard ou contactez votre admin.
+                    </p>
+                </div>
             }
             else
             {
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Client</th>
-                                <th>Téléphone</th>
-                                <th>Rendez-vous</th>
-                                <th>Source</th>
-                                <th>Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var r in _reservations)
-                            {
-                                var callUrl = $"/call/{r.Id}";
-                                <tr @onclick="() => Nav.NavigateTo(callUrl)" class="queue-row">
-                                    <td class="fw-medium">@r.CustomerName</td>
-                                    <td class="text-muted small">@r.PhoneNumber</td>
-                                    <td class="small">
-                                        @(r.AppointmentDate == DateTime.MinValue
-                                            ? "À définir"
-                                            : r.AppointmentDate.ToLocalTime().ToString("dd MMM yyyy 'à' HH:mm"))
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-secondary bg-opacity-25 text-dark small">
-                                            @r.Source
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if (!string.IsNullOrWhiteSpace(r.CurrentStatus))
-                                        {
-                                            <span class="status-badge @StatusCss(r.CurrentStatus)">
-                                                @r.CurrentStatus
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="status-badge status-call">
-                                                ▶ Lancer l'appel
-                                            </span>
-                                        }
-                                    </td>
+                <div class="apple-card mb-4" style="overflow: hidden;">
+                    <div class="table-responsive">
+                        <table class="apple-table">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Téléphone</th>
+                                    <th>Rendez-vous</th>
+                                    <th>Source</th>
+                                    <th>Statut</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in _reservations)
+                                {
+                                    var callUrl = $"/call/{r.Id}";
+                                    <tr @onclick="() => Nav.NavigateTo(callUrl)" class="queue-row">
+                                        <td style="font-weight: 600; font-size: 0.9rem;">@r.CustomerName</td>
+                                        <td style="color: #86868B; font-size: 0.825rem;">@r.PhoneNumber</td>
+                                        <td style="font-size: 0.825rem;">
+                                            @(r.AppointmentDate == DateTime.MinValue
+                                                ? "À définir"
+                                                : r.AppointmentDate.ToLocalTime().ToString("dd MMM yyyy 'à' HH:mm"))
+                                        </td>
+                                        <td>
+                                            <span class="rate-pill">@r.Source</span>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrWhiteSpace(r.CurrentStatus))
+                                            {
+                                                <span class="status-badge @StatusCss(r.CurrentStatus)">
+                                                    @r.CurrentStatus
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-badge status-call">
+                                                    ▶ Lancer l'appel
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             }
 
-            <hr class="section-divider" />
+            @* ── Recent History ── *@
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span style="font-size: 0.7rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #86868B;">
+                    Historique Récent
+                </span>
+            </div>
 
-            @* ── Recent Call History ─────────────────── *@
-            <div>
-                <div class="history-header">
-                    <h6 class="mb-0 fw-bold text-uppercase text-muted" style="letter-spacing:.05em">
-                        Historique Récent
-                    </h6>
-                    <button class="btn btn-sm btn-outline-secondary" @onclick="LoadAll" disabled="@_loading">
-                        Rafraîchir
-                    </button>
+            @if (_logs.Count == 0)
+            {
+                <div class="apple-card" style="padding: 2rem 1.5rem; text-align: center;">
+                    <p style="color: #86868B; font-size: 0.875rem; margin: 0;">Aucun appel enregistré.</p>
                 </div>
-
-                @if (_logs.Count == 0)
-                {
-                    <p class="text-muted text-center py-3 small">Aucun appel enregistré.</p>
-                }
-                else
-                {
+            }
+            else
+            {
+                <div class="apple-card" style="overflow: hidden;">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                        <table class="apple-table">
+                            <thead>
                                 <tr>
                                     <th>Client</th>
                                     <th>Téléphone</th>
@@ -129,24 +190,26 @@
                                 @foreach (var log in _logs)
                                 {
                                     <tr>
-                                        <td class="fw-medium">@log.CustomerName</td>
-                                        <td class="text-muted small">@log.PhoneNumber</td>
+                                        <td style="font-weight: 600; font-size: 0.875rem;">@log.CustomerName</td>
+                                        <td style="color: #86868B; font-size: 0.825rem;">@log.PhoneNumber</td>
                                         <td>
                                             <span class="outcome-badge @OutcomeCss(log.Outcome)">
                                                 @FormatOutcome(log.Outcome)
                                             </span>
                                             @if (!string.IsNullOrWhiteSpace(log.Notes))
                                             {
-                                                <div class="text-muted" style="font-size:.7rem">@log.Notes</div>
+                                                <div style="font-size: 0.72rem; color: #86868B; margin-top: 0.2rem; font-style: italic;">
+                                                    @log.Notes
+                                                </div>
                                             }
                                         </td>
-                                        <td class="text-muted small">
+                                        <td style="color: #86868B; font-size: 0.8rem; white-space: nowrap;">
                                             @log.CreatedAt.ToLocalTime().ToString("dd MMM, HH:mm")
                                         </td>
                                         <td class="text-end">
                                             @if (log.Id != Guid.Empty)
                                             {
-                                                <button class="btn btn-sm btn-outline-secondary border-0"
+                                                <button class="apple-back-link"
                                                         @onclick="() => EditCallLog(log.Id)"
                                                         title="Modifier l'entrée">
                                                     <i class="bi bi-pencil-square"></i>
@@ -158,18 +221,41 @@
                             </tbody>
                         </table>
                     </div>
-                }
-            </div>
+                </div>
+            }
+
         </Authorized>
     </AuthorizeView>
 
 </div>
 
 @code {
+    // ── Pre-login state ──────────────────────────────────────────────────
+    private bool   _showUserGrid;
+    private bool   _loadingLogin;
+    private string _loadingUser = string.Empty;
+    private string _loginError  = string.Empty;
+
+    private static readonly List<string> _closeuses =
+    [
+        "Hayat Mahir",
+        "Amel K",
+        "Sakina Slimani",
+        "Kowsar Abdi",
+        "Jennifer",
+        "Batoul",
+        "Ines",
+        "Amel"
+    ];
+
+    // ── Post-login state ─────────────────────────────────────────────────
     private List<CallReservation> _reservations = [];
     private List<CallLog>         _logs         = [];
     private bool                  _loading      = true;
     private string?               _error;
+
+    private CustomAuthStateProvider AuthState =>
+        (CustomAuthStateProvider)AuthProvider;
 
     protected override async Task OnInitializedAsync()
     {
@@ -179,9 +265,45 @@
             Nav.NavigateTo("/admin", replace: true);
             return;
         }
-        await LoadAll();
+        if (state.User.Identity?.IsAuthenticated == true)
+            await LoadAll();
+        else
+            _loading = false;
     }
 
+    // ── Closeuse selection ───────────────────────────────────────────────
+    private void RevealGrid() => _showUserGrid = true;
+
+    private async Task SelectCloser(string name)
+    {
+        _loadingLogin = true;
+        _loadingUser  = name;
+        _loginError   = string.Empty;
+        try
+        {
+            var result = await ApiService.SelectCloserAsync(name);
+            if (result is not null)
+            {
+                await AuthState.MarkUserAsAuthenticated(result.Token);
+                Nav.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                _loginError = "Identité non reconnue. Contactez votre admin.";
+            }
+        }
+        catch
+        {
+            _loginError = "Erreur réseau — vérifiez la connexion.";
+        }
+        finally
+        {
+            _loadingLogin = false;
+            _loadingUser  = string.Empty;
+        }
+    }
+
+    // ── Queue + history loading ──────────────────────────────────────────
     private async Task LoadAll()
     {
         _loading = true;
@@ -191,13 +313,10 @@
             var allReservations = await ApiService.GetMyReservationsAsync();
             var actualLogs      = await ApiService.GetMyCallLogsAsync();
 
-            // Queue: only reservations that have no status yet (closer hasn't touched them).
             _reservations = allReservations
                 .Where(r => string.IsNullOrWhiteSpace(r.CurrentStatus))
                 .ToList();
 
-            // Sheet-only updates: reservations WITH a status but NO matching call log entry.
-            // Matched by phone number since CallLog has no ReservationId FK on the frontend.
             var sheetUpdates = allReservations
                 .Where(r => !string.IsNullOrWhiteSpace(r.CurrentStatus)
                          && !actualLogs.Any(c => c.PhoneNumber == r.PhoneNumber))
@@ -228,7 +347,7 @@
         }
     }
 
-    // ── Status badge CSS ─────────────────────────────
+    // ── Status badge CSS ─────────────────────────────────────────────────
     private static string StatusCss(string status)
     {
         var s = status.Trim().ToLowerInvariant();
@@ -239,7 +358,7 @@
         return "status-autre";
     }
 
-    // ── Outcome helpers ──────────────────────────────
+    // ── Outcome helpers ──────────────────────────────────────────────────
     private static string FormatOutcome(string outcome) => outcome switch
     {
         "Answered_Available"        => "Répondu — Disponible",
@@ -253,10 +372,9 @@
     private static string OutcomeCss(string outcome) =>
         outcome.StartsWith("Answered") ? "outcome-answered" : "outcome-not-answered";
 
-    // ── History actions ──────────────────────────────
+    // ── History actions ──────────────────────────────────────────────────
     private void EditCallLog(Guid id)
     {
-        // TODO: navigate to an edit page or open a modal for the selected call log.
         Nav.NavigateTo($"/call-log/{id}/edit");
     }
 }

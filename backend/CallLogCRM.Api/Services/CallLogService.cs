@@ -82,6 +82,17 @@ public class CallLogService(
                    .OrderByDescending(l => l.CreatedAt)
                    .ToListAsync();
 
+    public async Task<bool> UpdateCallLogFinancialsAsync(Guid id, UpdateFinancialsDto dto)
+    {
+        var log = await db.CallLogs.FindAsync(id);
+        if (log is null) return false;
+
+        log.Revenue         = dto.Revenue;
+        log.AmountCollected = dto.AmountCollected;
+        await db.SaveChangesAsync();
+        return true;
+    }
+
     private static string? GetSmsMessage(CallOutcome outcome) => outcome switch
     {
         CallOutcome.NotAnswered_VoicemailLeft => "We tried to reach you and left a voicemail. Reply YES to get a callback.",

@@ -1,12 +1,9 @@
-.max-width-400 {
-    max-width: 400px;
-}
+.max-width-400 { max-width: 400px; }
 
+/* Legacy .script-box — kept for compatibility, new pages use .script-content */
 .script-box {
     max-height: 50vh;
     overflow-y: auto;
-    background-color: #f8f9fa;
-    border-radius: 0.5rem;
-    font-size: 1.1rem;
-    line-height: 1.6;
+    font-size: 1.05rem;
+    line-height: 1.65;
 }

@@ -103,6 +103,16 @@ public class ApiService
         return await _http.GetFromJsonAsync<List<CallLog>>("api/calllogs/mine") ?? [];
     }
 
+    // PUT /api/calllogs/{id}/financials — admin financial override. Returns true on success.
+    public async Task<bool> UpdateCallLogFinancialsAsync(Guid id, decimal revenue, decimal amountCollected)
+    {
+        await AttachTokenAsync();
+        var response = await _http.PutAsJsonAsync(
+            $"api/calllogs/{id}/financials",
+            new { Revenue = revenue, AmountCollected = amountCollected });
+        return response.IsSuccessStatusCode;
+    }
+
     // POST /api/calllogs
     // Returns true on 2xx, throws on network failure so the caller can show an error.
     public async Task<bool> CreateCallLogAsync(CreateCallLogRequest request)

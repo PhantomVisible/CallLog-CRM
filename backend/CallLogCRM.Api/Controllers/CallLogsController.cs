@@ -48,6 +48,19 @@ public class CallLogsController(ICallLogService callLogService) : ControllerBase
     public async Task<IActionResult> GetAdminCallLogs()
         => Ok(await callLogService.GetAdminCallLogsAsync());
 
+    // PUT /api/calllogs/{id}/financials
+    // Admin-only: overrides Revenue and AmountCollected on a persisted call log.
+    [HttpPut("{id}/financials")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UpdateFinancials(Guid id, [FromBody] UpdateFinancialsDto dto)
+    {
+        var success = await callLogService.UpdateCallLogFinancialsAsync(id, dto);
+        return success ? NoContent() : NotFound();
+    }
+
     // GET /api/calllogs/mine
     // Returns only the authenticated closer's own logs, newest-first.
     [HttpGet("mine")]

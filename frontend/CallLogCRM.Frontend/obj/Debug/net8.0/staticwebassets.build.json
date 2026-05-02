@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "RdYH2jndelqW3j0xHS0nl5FakVMnbHDFttlrflHvITk=",
+  "Hash": "NHwv4bFUGa6RjPAQ26IsN3Bi0ZUikQaq0FP5Fj1HGyo=",
   "Source": "CallLogCRM.Frontend",
   "BasePath": "_content/CallLogCRM.Frontend",
   "Mode": "Default",
@@ -91,6 +91,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/FORMULE-EXCELLENCE.pdf"
+    },
+    {
+      "Identity": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/images/joli-gateaux.gif",
+      "SourceId": "CallLogCRM.Frontend",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/phantomvisible/Documents/GitHub/CallLog-CRM/frontend/CallLogCRM.Frontend/wwwroot/",
+      "BasePath": "_content/CallLogCRM.Frontend",
+      "RelativePath": "images/joli-gateaux.gif",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/joli-gateaux.gif"
     }
   ]
 }

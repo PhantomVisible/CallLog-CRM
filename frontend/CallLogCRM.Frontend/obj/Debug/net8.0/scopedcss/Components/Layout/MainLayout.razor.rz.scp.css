@@ -1,96 +1,132 @@
-/* ── Header overflow fix — lets the dropdown hang below the sticky header ── */
-/* The app-header has z-index:100 in app.css; overflow must stay visible.     */
+/* ── Header: 3-column grid layout ────────────────────────────────────────── */
+/* Overrides the flex layout from app.css; scoped attr wins on specificity.  */
+.app-header[b-j699pgj0wv] {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-/* ── Identity area ──────────────────────────────────────────────────────── */
+.header-center[b-j699pgj0wv] {
+    display: flex;
+    justify-content: center;
+}
+
+.header-logo-link[b-j699pgj0wv] {
+    display: block;
+    line-height: 0;
+}
+
+.header-logo[b-j699pgj0wv] {
+    height: 40px;
+    width: auto;
+    display: block;
+}
+
+.header-side[b-j699pgj0wv] {
+    display: flex;
+    align-items: center;
+}
+
+.header-side--right[b-j699pgj0wv] {
+    justify-content: flex-end;
+}
+
+/* ── Identity area (logged-in state) ─────────────────────────────────────── */
 .identity-area[b-j699pgj0wv] {
     position: relative;
 }
 
 .identity-name[b-j699pgj0wv] {
-    color: #d0d0ff;
+    color: #3A3A3C;
     font-size: 0.88rem;
 }
 
-/* ── Dropdown panel ─────────────────────────────────────────────────────── */
-.identity-dropdown[b-j699pgj0wv] {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    min-width: 240px;
-    background: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
-    padding: 0.35rem 0 0.5rem;
-    z-index: 300; /* above the sticky header's z-index:100 */
-}
-
-/* ── Dropdown section header ─────────────────────────────────────────────── */
-.identity-dropdown-header[b-j699pgj0wv] {
-    padding: 0.4rem 1rem 0.55rem;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #9ca3af;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 0.25rem;
-}
-
-/* ── Closer name buttons ─────────────────────────────────────────────────── */
-.identity-option[b-j699pgj0wv] {
-    display: block;
-    width: 100%;
+/* ── Subtle Admin trigger button ─────────────────────────────────────────── */
+.nav-btn-admin-subtle[b-j699pgj0wv] {
     background: none;
     border: none;
-    padding: 0.48rem 1rem;
-    text-align: left;
-    font-size: 0.88rem;
-    color: #1a1a2e;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #C7C7CC;
     cursor: pointer;
-    transition: background 0.1s ease, color 0.1s ease;
-    border-radius: 0;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+    border-radius: 6px;
+    transition: color 0.15s ease, background 0.15s ease;
 }
 
-.identity-option:hover:not(:disabled)[b-j699pgj0wv] {
-    background: #f0f0ff;
-    color: #3730a3;
+.nav-btn-admin-subtle:hover[b-j699pgj0wv] {
+    color: #3A3A3C;
+    background: rgba(0, 0, 0, 0.04);
 }
 
-.identity-option:disabled[b-j699pgj0wv] {
-    opacity: 0.5;
-    cursor: wait;
-}
-
-.identity-option--admin[b-j699pgj0wv] {
-    font-weight: 700;
-    color: #374151;
-}
-
-/* ── Admin inline login row ──────────────────────────────────────────────── */
-.admin-login-row[b-j699pgj0wv] {
+/* ── Admin modal backdrop ────────────────────────────────────────────────── */
+.admin-modal-backdrop[b-j699pgj0wv] {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 500;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.75rem;
+    justify-content: center;
+    padding: 1rem;
+    animation: backdrop-fade-in-b-j699pgj0wv 0.2s ease;
 }
 
-.admin-label[b-j699pgj0wv] {
+@keyframes backdrop-fade-in-b-j699pgj0wv {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Admin modal card (iOS system-prompt style) ──────────────────────────── */
+.admin-modal-card[b-j699pgj0wv] {
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 24px;
+    box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.18),
+        0 4px 16px rgba(0, 0, 0, 0.06);
+    padding: 2.25rem 2rem 2rem;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    animation: modal-spring-in-b-j699pgj0wv 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-spring-in-b-j699pgj0wv {
+    from { opacity: 0; transform: scale(0.86) translateY(16px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+.admin-modal-icon[b-j699pgj0wv] {
+    font-size: 2.6rem;
+    color: #AEAEB2;
+    margin-bottom: 0.8rem;
+    line-height: 1;
+}
+
+.admin-modal-title[b-j699pgj0wv] {
+    font-size: 1.15rem;
     font-weight: 700;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    color: #1a1a2e;
+    color: #1D1D1F;
+    letter-spacing: -0.3px;
+    margin-bottom: 0.3rem;
 }
 
-.admin-login-row .form-control[b-j699pgj0wv] {
-    flex: 1;
-    min-width: 0;
+.admin-modal-subtitle[b-j699pgj0wv] {
+    font-size: 0.82rem;
+    color: #86868B;
+    margin-bottom: 1.5rem;
 }
 
-/* ── Error message ───────────────────────────────────────────────────────── */
-.dropdown-error[b-j699pgj0wv] {
-    padding: 0.3rem 1rem;
+.admin-modal-error[b-j699pgj0wv] {
     font-size: 0.78rem;
-    color: #dc2626;
+    color: #FF3B30;
     font-weight: 500;
+    margin: 0;
 }

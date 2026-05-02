@@ -16,4 +16,7 @@ public interface ICallLogService
 
     /// <summary>Returns only the logs belonging to <paramref name="userId"/>, newest first.</summary>
     Task<IEnumerable<CallLog>> GetMyCallLogsAsync(Guid userId);
+
+    /// <summary>Partially updates Revenue and AmountCollected on an existing call log.</summary>
+    Task<bool> UpdateCallLogFinancialsAsync(Guid id, UpdateFinancialsDto dto);
 }

@@ -16,7 +16,10 @@ h1:focus { outline: none; }
 }
 
 .app-header {
-    background: #1a1a2e;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
     padding: 0.85rem 1.5rem;
     position: sticky;
     top: 0;
@@ -24,14 +27,14 @@ h1:focus { outline: none; }
 }
 
 .header-brand {
-    color: #ffffff;
-    font-size: 1.1rem;
+    color: #1D1D1F;
+    font-size: 1.05rem;
     font-weight: 700;
     text-decoration: none;
-    letter-spacing: 0.3px;
+    letter-spacing: -0.2px;
 }
 
-.header-brand:hover { color: #d0d0ff; }
+.header-brand:hover { color: #007AFF; }
 
 .app-main {
     flex: 1;
@@ -109,7 +112,7 @@ h1:focus { outline: none; }
 
 /* ---- Call Flow Page ---- */
 .call-container {
-    max-width: 460px;
+    max-width: 900px;
     margin: 0 auto;
     padding-top: 0.5rem;
 }
@@ -128,11 +131,12 @@ h1:focus { outline: none; }
 }
 
 .call-question {
-    font-size: 1.45rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    color: #1a1a2e;
-    margin-bottom: 1.6rem;
-    line-height: 1.25;
+    color: #1D1D1F;
+    letter-spacing: -0.5px;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
 /* ---- Action Buttons ---- */
@@ -162,6 +166,448 @@ h1:focus { outline: none; }
 }
 
 .btn-back:hover { color: #343a40; }
+
+/* ══════════════════════════════════════════════════════════
+   Apple-Style Admin Dashboard Design System
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Global overrides for admin context ── */
+.layout-wrapper { background: #F5F5F7; }
+
+body, .admin-page {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* ── Page scaffold ── */
+.admin-page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-bottom: 5rem;
+}
+
+/* ── Apple Card ── */
+.apple-card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    border: none !important;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+/* ── Page title ── */
+.apple-page-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: #1D1D1F;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+}
+
+.apple-page-subtitle {
+    font-size: 0.9rem;
+    color: #86868B;
+    font-weight: 400;
+    margin-bottom: 0;
+}
+
+/* ── Refresh button ── */
+.apple-btn-refresh {
+    background: rgba(0, 122, 255, 0.08);
+    color: #007AFF;
+    border: none;
+    border-radius: 980px;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+}
+
+.apple-btn-refresh:hover { background: rgba(0, 122, 255, 0.14); }
+
+/* ── KPI card ── */
+.apple-kpi-card {
+    padding: 1.6rem 1.5rem 1.5rem;
+}
+
+.apple-kpi-label {
+    display: block;
+    font-size: 0.67rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #86868B;
+    margin-bottom: 0.55rem;
+}
+
+.apple-kpi-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    color: #1D1D1F;
+    margin: 0;
+}
+
+/* Apple system colours for KPI values */
+.kv-green  { color: #34C759; }
+.kv-mint   { color: #00C7BE; }
+.kv-blue   { color: #007AFF; }
+.kv-teal   { color: #32ADE6; }
+.kv-orange { color: #FF9F0A; }
+.kv-red    { color: #FF3B30; }
+.kv-purple { color: #AF52DE; }
+
+/* ── Card section headers ── */
+.apple-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1D1D1F;
+    letter-spacing: -0.2px;
+    border-bottom: 1px solid #F2F2F7;
+}
+
+/* ── Apple table ── */
+.apple-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+}
+
+.apple-table thead tr { background: #F9F9FB; }
+
+.apple-table thead th {
+    font-size: 0.67rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #86868B;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    white-space: nowrap;
+}
+
+.apple-table tbody tr { border-bottom: 1px solid #F2F2F7; }
+.apple-table tbody tr:last-child { border-bottom: none; }
+.apple-table tbody tr:hover { background: rgba(0, 0, 0, 0.012); }
+
+.apple-table tbody td {
+    padding: 0.95rem 1.25rem;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    color: #1D1D1F;
+    border: none;
+}
+
+/* ── Rate pills ── */
+.rate-pill {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.18rem 0.6rem;
+    border-radius: 980px;
+    background: #E8E8ED;
+    color: #3A3A3C;
+    white-space: nowrap;
+}
+
+.rate-pill-good   { background: #D1F5D3; color: #1A7A2E; }
+.rate-pill-medium { background: #FFF3D6; color: #9A5700; }
+.rate-pill-poor   { background: #FFE5E5; color: #C0392B; }
+
+/* ── Loss breakdown rows ── */
+.loss-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.5rem;
+    border-bottom: 1px solid #F2F2F7;
+    transition: background 0.1s ease;
+}
+
+.loss-row:last-child { border-bottom: none; }
+.loss-row:hover      { background: rgba(0,0,0,0.012); }
+
+.loss-label {
+    font-size: 0.85rem;
+    color: #3A3A3C;
+    font-weight: 500;
+}
+
+.loss-count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: #FFE5E5;
+    color: #C0392B;
+    padding: 0.2rem 0.65rem;
+    border-radius: 980px;
+}
+
+/* ── Registry value cells ── */
+.val-positive { color: #34C759; font-weight: 600; }
+.val-zero     { color: #C7C7CC; }
+
+/* ── Leaderboard rank cell ── */
+.lb-medal   { font-size: 1.25rem; line-height: 1; }
+.lb-rank-no { font-size: 0.8rem; font-weight: 600; color: #AEAEB2; display: inline-block; min-width: 1.5rem; text-align: center; }
+
+/* ── Soft Bootstrap badge overrides ── */
+/* Keeps OutcomeBadgeCss() return values but makes them look Apple-style */
+.badge {
+    border-radius: 980px !important;
+    font-weight: 600 !important;
+    font-size: 0.68rem !important;
+    padding: 0.25rem 0.65rem !important;
+    letter-spacing: 0.01em;
+}
+
+.badge.bg-success   { background-color: #D1F5D3 !important; color: #1A7A2E !important; }
+.badge.bg-warning   { background-color: #FFF3D6 !important; color: #9A5700 !important; }
+.badge.text-dark    { color: #9A5700 !important; }
+.badge.bg-info      { background-color: #D6EEFF !important; color: #0055B3 !important; }
+.badge.bg-danger    { background-color: #FFE5E5 !important; color: #C0392B !important; }
+.badge.bg-secondary { background-color: #E8E8ED !important; color: #3A3A3C !important; }
+
+/* ── Loading state ── */
+.admin-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1rem;
+    color: #86868B;
+    font-size: 0.875rem;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Apple UI Primitives — Global Components
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Header nav pill buttons ── */
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: none;
+    border-radius: 980px;
+    padding: 0.38rem 1rem;
+    font-size: 0.825rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+}
+.nav-btn:hover:not(:disabled) { opacity: 0.72; }
+.nav-btn:disabled              { opacity: 0.45; cursor: not-allowed; }
+
+.nav-btn-admin    { background: rgba(255, 159, 10, 0.12); color: #9A5700; }
+.nav-btn-logout   { background: rgba(0, 0, 0, 0.07);      color: #3A3A3C; }
+.nav-btn-identity { background: rgba(0, 122, 255, 0.10);  color: #007AFF; }
+.nav-btn-confirm  { background: #007AFF; color: #ffffff; }
+.nav-btn-confirm:hover:not(:disabled) { background: #0066D6; opacity: 1; }
+
+/* ── Apple form inputs ── */
+.apple-input,
+.apple-textarea,
+.form-control {
+    display: block;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid #D1D1D6;
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    color: #1D1D1F;
+    font-family: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.apple-input:focus,
+.apple-textarea:focus,
+.form-control:focus {
+    background: #FFFFFF;
+    border-color: #007AFF;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12), inset 0 1px 3px rgba(0, 0, 0, 0.03);
+    outline: none;
+}
+
+.apple-input[readonly],
+.apple-input:disabled,
+.form-control:disabled { opacity: 0.6; box-shadow: none; }
+
+.apple-textarea,
+.form-control[rows] { resize: vertical; }
+.apple-input-lg { font-size: 1rem; padding: 0.95rem 1.1rem; border-radius: 14px; }
+
+/* ── Apple form label ── */
+.apple-form-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #86868B;
+    margin-bottom: 0.45rem;
+}
+
+/* ── Apple action buttons ── */
+.apple-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: none;
+    border-radius: 14px;
+    padding: 0.875rem 1.1rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    flex: 1;
+    min-width: 0;
+    line-height: 1.2;
+    text-align: center;
+    transition: opacity 0.12s ease, transform 0.1s ease;
+}
+
+.apple-action-btn:hover:not(:disabled)   { opacity: 0.84; }
+.apple-action-btn:active:not(:disabled)  { transform: scale(0.975); }
+.apple-action-btn:disabled               { opacity: 0.38; cursor: not-allowed; }
+
+.apple-action-full {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    line-height: 1.2;
+    transition: opacity 0.12s ease, transform 0.1s ease;
+}
+
+.apple-action-full:hover:not(:disabled)  { opacity: 0.84; }
+.apple-action-full:active:not(:disabled) { transform: scale(0.99); }
+.apple-action-full:disabled              { opacity: 0.38; cursor: not-allowed; }
+
+/* colour variants (shared by both .apple-action-btn and .apple-action-full) */
+.apple-btn-green  { background: #34C759; color: #ffffff; }
+.apple-btn-blue   { background: #007AFF; color: #ffffff; }
+.apple-btn-red    { background: #FF3B30; color: #ffffff; }
+.apple-btn-orange { background: #FF9F0A; color: #ffffff; }
+.apple-btn-gray   { background: #E8E8ED; color: #3A3A3C; }
+.apple-btn-yellow { background: #FFF3D6; color: #9A5700; border: 1.5px solid #FFE3A3; }
+
+/* ── Back / subtle link button ── */
+.apple-back-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #86868B;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: color 0.12s ease;
+}
+.apple-back-link:hover { color: #3A3A3C; }
+
+/* ── In-script alert boxes ── */
+.apple-alert {
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    border-left: 3px solid transparent;
+}
+.apple-alert h5, .apple-alert h6    { font-weight: 700; margin-bottom: 0.45rem; color: inherit; font-size: inherit; }
+.apple-alert p:last-child,
+.apple-alert ul:last-child           { margin-bottom: 0; }
+
+.apple-alert-info    { background: #EBF5FF; color: #004085; border-left-color: #007AFF; }
+.apple-alert-success { background: #EDFAF1; color: #155724; border-left-color: #34C759; }
+.apple-alert-danger  { background: #FFF2F0; color: #C0392B; border-left-color: #FF3B30; }
+.apple-alert-warning { background: #FFFBF0; color: #9A5700; border-left-color: #FF9F0A; }
+.apple-alert-neutral { background: #F5F5F7; color: #3A3A3C; border-left-color: #AEAEB2; }
+
+/* ── Script content (replaces .script-box) ── */
+.script-content {
+    padding: 1.75rem 2rem;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: #1D1D1F;
+    max-height: 62vh;
+    overflow-y: auto;
+}
+
+.script-content p    { margin-bottom: 0.75rem; }
+.script-content ul   { padding-left: 1.4rem; margin-bottom: 0.75rem; }
+.script-content hr   { border: none; border-top: 1px solid #F2F2F7; margin: 1.25rem 0; }
+.script-content h4,
+.script-content h5,
+.script-content h6   { letter-spacing: -0.2px; }
+
+/* ── Phase 7 objection toggle pills ── */
+.objection-btn {
+    border-radius: 980px;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+    font-family: inherit;
+    background: #F0F0F5;
+    color: #3A3A3C;
+}
+.objection-btn:hover                { background: #E4E4EC; }
+.objection-btn.active-red           { background: #FFE5E5; color: #C0392B; border-color: #FFBBBB; }
+.objection-btn.active-yellow        { background: #FFF3D6; color: #9A5700; border-color: #FFE3A3; }
+.objection-btn.active-blue          { background: #D6EEFF; color: #0055B3; border-color: #A3D0FF; }
+.objection-btn.active-dark          { background: #E8E8ED; color: #1D1D1F; border-color: #C7C7CC; }
+
+/* ── Phase 8 payment links ── */
+.payment-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #F5F5F7;
+    border: 1.5px solid #E8E8ED;
+    border-radius: 14px;
+    padding: 0.9rem 1.1rem;
+    text-decoration: none;
+    color: #1D1D1F;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+.payment-link:hover                 { background: #EDFAF1; border-color: #34C759; color: #1A7A2E; }
+.payment-link .payment-amount       { margin-left: auto; font-weight: 700; color: #34C759; font-size: 0.95rem; }
+.payment-link-stripe                { background: #FFFBF0; border-color: #FFE3A3; color: #9A5700; }
+.payment-link-stripe:hover          { background: #FFF8E8; border-color: #FF9F0A; color: #9A5700; }
 
 /* ---- Blazor Error UI ---- */
 #blazor-error-ui {

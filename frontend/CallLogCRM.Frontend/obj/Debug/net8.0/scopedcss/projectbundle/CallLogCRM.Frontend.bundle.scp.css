@@ -1,124 +1,206 @@
 /* _content/CallLogCRM.Frontend/Components/Layout/MainLayout.razor.rz.scp.css */
-/* ── Header overflow fix — lets the dropdown hang below the sticky header ── */
-/* The app-header has z-index:100 in app.css; overflow must stay visible.     */
+/* ── Header: 3-column grid layout ────────────────────────────────────────── */
+/* Overrides the flex layout from app.css; scoped attr wins on specificity.  */
+.app-header[b-j699pgj0wv] {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-/* ── Identity area ──────────────────────────────────────────────────────── */
+.header-center[b-j699pgj0wv] {
+    display: flex;
+    justify-content: center;
+}
+
+.header-logo-link[b-j699pgj0wv] {
+    display: block;
+    line-height: 0;
+}
+
+.header-logo[b-j699pgj0wv] {
+    height: 40px;
+    width: auto;
+    display: block;
+}
+
+.header-side[b-j699pgj0wv] {
+    display: flex;
+    align-items: center;
+}
+
+.header-side--right[b-j699pgj0wv] {
+    justify-content: flex-end;
+}
+
+/* ── Identity area (logged-in state) ─────────────────────────────────────── */
 .identity-area[b-j699pgj0wv] {
     position: relative;
 }
 
 .identity-name[b-j699pgj0wv] {
-    color: #d0d0ff;
+    color: #3A3A3C;
     font-size: 0.88rem;
 }
 
-/* ── Dropdown panel ─────────────────────────────────────────────────────── */
-.identity-dropdown[b-j699pgj0wv] {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    min-width: 240px;
-    background: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
-    padding: 0.35rem 0 0.5rem;
-    z-index: 300; /* above the sticky header's z-index:100 */
+/* ── Subtle Admin trigger button ─────────────────────────────────────────── */
+.nav-btn-admin-subtle[b-j699pgj0wv] {
+    background: none;
+    border: none;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #C7C7CC;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+    border-radius: 6px;
+    transition: color 0.15s ease, background 0.15s ease;
 }
 
-/* ── Dropdown section header ─────────────────────────────────────────────── */
-.identity-dropdown-header[b-j699pgj0wv] {
-    padding: 0.4rem 1rem 0.55rem;
-    font-size: 0.7rem;
+.nav-btn-admin-subtle:hover[b-j699pgj0wv] {
+    color: #3A3A3C;
+    background: rgba(0, 0, 0, 0.04);
+}
+
+/* ── Admin modal backdrop ────────────────────────────────────────────────── */
+.admin-modal-backdrop[b-j699pgj0wv] {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: backdrop-fade-in-b-j699pgj0wv 0.2s ease;
+}
+
+@keyframes backdrop-fade-in-b-j699pgj0wv {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Admin modal card (iOS system-prompt style) ──────────────────────────── */
+.admin-modal-card[b-j699pgj0wv] {
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 24px;
+    box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.18),
+        0 4px 16px rgba(0, 0, 0, 0.06);
+    padding: 2.25rem 2rem 2rem;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    animation: modal-spring-in-b-j699pgj0wv 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-spring-in-b-j699pgj0wv {
+    from { opacity: 0; transform: scale(0.86) translateY(16px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+.admin-modal-icon[b-j699pgj0wv] {
+    font-size: 2.6rem;
+    color: #AEAEB2;
+    margin-bottom: 0.8rem;
+    line-height: 1;
+}
+
+.admin-modal-title[b-j699pgj0wv] {
+    font-size: 1.15rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #9ca3af;
-    border-bottom: 1px solid #f0f0f0;
+    color: #1D1D1F;
+    letter-spacing: -0.3px;
+    margin-bottom: 0.3rem;
+}
+
+.admin-modal-subtitle[b-j699pgj0wv] {
+    font-size: 0.82rem;
+    color: #86868B;
+    margin-bottom: 1.5rem;
+}
+
+.admin-modal-error[b-j699pgj0wv] {
+    font-size: 0.78rem;
+    color: #FF3B30;
+    font-weight: 500;
+    margin: 0;
+}
+/* _content/CallLogCRM.Frontend/Components/Pages/AdminDashboard.razor.rz.scp.css */
+/* ── Financial edit modal — backdrop ─────────────────────────────────────── */
+.fin-modal-backdrop[b-czfz0owtmj] {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.40);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fin-backdrop-in-b-czfz0owtmj 0.18s ease;
+}
+
+@keyframes fin-backdrop-in-b-czfz0owtmj {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Financial edit modal — card ─────────────────────────────────────────── */
+.fin-modal-card[b-czfz0owtmj] {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem 1.75rem 1.75rem;
+    animation: fin-modal-in-b-czfz0owtmj 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fin-modal-in-b-czfz0owtmj {
+    from { opacity: 0; transform: scale(0.88) translateY(14px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+.fin-modal-title[b-czfz0owtmj] {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1D1D1F;
+    letter-spacing: -0.3px;
     margin-bottom: 0.25rem;
 }
 
-/* ── Closer name buttons ─────────────────────────────────────────────────── */
-.identity-option[b-j699pgj0wv] {
-    display: block;
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 0.48rem 1rem;
-    text-align: left;
-    font-size: 0.88rem;
-    color: #1a1a2e;
-    cursor: pointer;
-    transition: background 0.1s ease, color 0.1s ease;
-    border-radius: 0;
+.fin-modal-sub[b-czfz0owtmj] {
+    font-size: 0.82rem;
+    color: #86868B;
+    margin-bottom: 1.5rem;
 }
 
-.identity-option:hover:not(:disabled)[b-j699pgj0wv] {
-    background: #f0f0ff;
-    color: #3730a3;
-}
-
-.identity-option:disabled[b-j699pgj0wv] {
-    opacity: 0.5;
-    cursor: wait;
-}
-
-.identity-option--admin[b-j699pgj0wv] {
-    font-weight: 700;
-    color: #374151;
-}
-
-/* ── Admin inline login row ──────────────────────────────────────────────── */
-.admin-login-row[b-j699pgj0wv] {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.75rem;
-}
-
-.admin-label[b-j699pgj0wv] {
-    font-weight: 700;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    color: #1a1a2e;
-}
-
-.admin-login-row .form-control[b-j699pgj0wv] {
-    flex: 1;
-    min-width: 0;
-}
-
-/* ── Error message ───────────────────────────────────────────────────────── */
-.dropdown-error[b-j699pgj0wv] {
-    padding: 0.3rem 1rem;
+.fin-modal-error[b-czfz0owtmj] {
     font-size: 0.78rem;
-    color: #dc2626;
+    color: #FF3B30;
     font-weight: 500;
+    margin: 0;
 }
 /* _content/CallLogCRM.Frontend/Components/Pages/Call.razor.rz.scp.css */
-.max-width-400[b-tt1n3spwqa] {
-    max-width: 400px;
-}
+.max-width-400[b-tt1n3spwqa] { max-width: 400px; }
 
+/* Legacy .script-box — kept for compatibility, new pages use .script-content */
 .script-box[b-tt1n3spwqa] {
     max-height: 50vh;
     overflow-y: auto;
-    background-color: #f8f9fa;
-    border-radius: 0.5rem;
-    font-size: 1.1rem;
-    line-height: 1.6;
+    font-size: 1.05rem;
+    line-height: 1.65;
 }
 /* _content/CallLogCRM.Frontend/Components/Pages/Home.razor.rz.scp.css */
 /* ── Table layout ────────────────────────────────────────────────────────── */
-table[b-svx0rnrqzm] {
-    width: 100%;
-    table-layout: auto;
-}
+table[b-svx0rnrqzm] { width: 100%; table-layout: auto; }
 
 table th:nth-child(3)[b-svx0rnrqzm],
-table td:nth-child(3)[b-svx0rnrqzm] {
-    min-width: 180px;
-}
+table td:nth-child(3)[b-svx0rnrqzm] { min-width: 180px; }
 
 /* ── Clickable queue row ─────────────────────────────────────────────────── */
 .queue-row[b-svx0rnrqzm] {
@@ -126,61 +208,177 @@ table td:nth-child(3)[b-svx0rnrqzm] {
     transition: background 0.1s ease;
 }
 
-.queue-row:hover[b-svx0rnrqzm] {
-    background: #f5f3ff !important; /* light indigo tint on hover */
-}
+.queue-row:hover[b-svx0rnrqzm] { background: rgba(0, 122, 255, 0.035) !important; }
 
 /* ── Status badges (CurrentStatus from Google Sheet col H) ───────────────── */
 .status-badge[b-svx0rnrqzm] {
     display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 0.25rem 0.65rem;
-    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.22rem 0.65rem;
+    border-radius: 980px;
     white-space: nowrap;
     letter-spacing: 0.02em;
     cursor: pointer;
-    transition: opacity 0.12s ease, transform 0.1s ease;
+    transition: opacity 0.12s ease;
 }
 
-.status-badge:hover[b-svx0rnrqzm] {
-    opacity: 0.82;
-    transform: scale(1.04);
+.status-badge:hover[b-svx0rnrqzm] { opacity: 0.78; }
+
+.status-call[b-svx0rnrqzm]      { background: #EBF5FF; color: #0055B3; }
+.status-vente[b-svx0rnrqzm]     { background: #D1F5D3; color: #1A7A2E; }
+.status-pas-vente[b-svx0rnrqzm] { background: #FFE5E5; color: #C0392B; }
+.status-rdv[b-svx0rnrqzm]       { background: #D6EEFF; color: #0055B3; }
+.status-rappel[b-svx0rnrqzm]    { background: #FFF3D6; color: #9A5700; }
+.status-autre[b-svx0rnrqzm]     { background: #E8E8ED; color: #3A3A3C; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Hero Login Screen
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.hero-login[b-svx0rnrqzm] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+    text-align: center;
+    padding: 2rem 1rem;
+    animation: hero-fade-in-b-svx0rnrqzm 0.5s ease;
 }
 
-/* "▶ Lancer l'appel" — default when no status yet */
-.status-call[b-svx0rnrqzm] {
-    background: #ede9fe;
-    color: #4f46e5;
-    border: 1px solid #c4b5fd;
+@keyframes hero-fade-in-b-svx0rnrqzm {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0);    }
 }
 
-/* Vente (sale confirmed) ─ green */
-.status-vente[b-svx0rnrqzm] {
-    background: #dcfce7;
-    color: #166534;
+.hero-login-title[b-svx0rnrqzm] {
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    font-weight: 800;
+    color: #1D1D1F;
+    letter-spacing: -3px;
+    line-height: 1;
+    margin-bottom: 0.6rem;
 }
 
-/* Pas de vente (no sale) ─ red */
-.status-pas-vente[b-svx0rnrqzm] {
-    background: #fee2e2;
-    color: #991b1b;
+.hero-login-sub[b-svx0rnrqzm] {
+    font-size: 1.05rem;
+    color: #86868B;
+    font-weight: 400;
+    max-width: 380px;
+    line-height: 1.5;
+    margin-bottom: 2.75rem;
 }
 
-/* RDV confirmé ─ blue */
-.status-rdv[b-svx0rnrqzm] {
-    background: #dbeafe;
-    color: #1e40af;
+.hero-connexion-btn[b-svx0rnrqzm] {
+    background: #007AFF;
+    color: #ffffff;
+    border: none;
+    border-radius: 980px;
+    padding: 0.9rem 3.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.1px;
+    box-shadow: 0 4px 24px rgba(0, 122, 255, 0.28);
+    transition: opacity 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
 }
 
-/* Rappel ─ amber */
-.status-rappel[b-svx0rnrqzm] {
-    background: #fef3c7;
-    color: #92400e;
+.hero-connexion-btn:hover[b-svx0rnrqzm] {
+    opacity: 0.88;
+    box-shadow: 0 6px 32px rgba(0, 122, 255, 0.38);
 }
 
-/* Other statuses ─ neutral */
-.status-autre[b-svx0rnrqzm] {
-    background: #f1f5f9;
-    color: #475569;
+.hero-connexion-btn:active[b-svx0rnrqzm] {
+    transform: scale(0.97);
+    box-shadow: 0 2px 12px rgba(0, 122, 255, 0.22);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Closeuse Selection Grid
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.user-grid-header[b-svx0rnrqzm] {
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+    animation: hero-fade-in-b-svx0rnrqzm 0.35s ease;
+}
+
+.user-grid-title[b-svx0rnrqzm] {
+    font-size: clamp(1.6rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: #1D1D1F;
+    letter-spacing: -1px;
+    margin-bottom: 0.3rem;
+}
+
+.user-grid-sub[b-svx0rnrqzm] {
+    font-size: 0.9rem;
+    color: #86868B;
+    margin: 0;
+}
+
+/* ── User card ───────────────────────────────────────────────────────────── */
+.user-card[b-svx0rnrqzm] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.75rem 1rem 1.25rem;
+    gap: 0.6rem;
+    text-align: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    animation: card-pop-in-b-svx0rnrqzm 0.3s ease both;
+}
+
+.user-card:hover[b-svx0rnrqzm] {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 36px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+@keyframes card-pop-in-b-svx0rnrqzm {
+    from { opacity: 0; transform: scale(0.95) translateY(8px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);   }
+}
+
+.user-card-avatar[b-svx0rnrqzm] {
+    font-size: 3.5rem;
+    color: #D1D1D6;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
+
+.user-card-name[b-svx0rnrqzm] {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1D1D1F;
+    letter-spacing: -0.2px;
+}
+
+.user-card-btn[b-svx0rnrqzm] {
+    background: rgba(0, 122, 255, 0.08);
+    color: #007AFF;
+    border: none;
+    border-radius: 980px;
+    padding: 0.42rem 1.35rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 0.25rem;
+    transition: background 0.15s ease, opacity 0.15s ease;
+    min-width: 90px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.user-card-btn:hover:not(:disabled)[b-svx0rnrqzm] {
+    background: rgba(0, 122, 255, 0.15);
+}
+
+.user-card-btn:disabled[b-svx0rnrqzm] {
+    opacity: 0.5;
+    cursor: wait;
 }
