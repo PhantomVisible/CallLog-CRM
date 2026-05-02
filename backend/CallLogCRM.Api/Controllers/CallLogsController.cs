@@ -27,7 +27,7 @@ public class CallLogsController(ICallLogService callLogService) : ControllerBase
         if (!Guid.TryParse(userIdString, out var userId))
             return Unauthorized();
 
-        var created = await callLogService.CreateCallLogAsync(dto, userId);
+        var created = await callLogService.CreateCallLogAsync(dto, userId, dto.Notes);
         return CreatedAtAction(nameof(GetAllCallLogs), new { id = created.Id }, created);
     }
 
@@ -38,6 +38,15 @@ public class CallLogsController(ICallLogService callLogService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAllCallLogs()
         => Ok(await callLogService.GetAllCallLogsAsync());
+
+    // GET /api/calllogs/admin
+    // Returns all logs with CloserName joined — admin dashboard only.
+    [HttpGet("admin")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(IEnumerable<CallLogAdminDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetAdminCallLogs()
+        => Ok(await callLogService.GetAdminCallLogsAsync());
 
     // GET /api/calllogs/mine
     // Returns only the authenticated closer's own logs, newest-first.

@@ -17,6 +17,12 @@
                     <span class="identity-name">
                         Bonjour, <strong>@context.User.Identity?.Name</strong>
                     </span>
+                    @if (context.User.IsInRole("Admin"))
+                    {
+                        <a href="/admin" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-speedometer2 me-1"></i> Admin
+                        </a>
+                    }
                     <button class="btn btn-sm btn-outline-light" @onclick="HandleLogout"
                             disabled="@_loading">
                         Déconnexion
@@ -191,7 +197,7 @@
             {
                 await AuthState.MarkUserAsAuthenticated(result.Token);
                 _showDropdown = false;
-                Nav.NavigateTo("/", forceLoad: true);
+                Nav.NavigateTo("/admin", forceLoad: true);
             }
             else
             {

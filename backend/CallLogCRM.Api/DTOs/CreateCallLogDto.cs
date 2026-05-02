@@ -14,4 +14,8 @@ public class CreateCallLogDto
 
     [Required]
     public CallOutcome Outcome { get; set; }
+
+    public string?  Notes           { get; set; }
+    public decimal  Revenue         { get; set; }
+    public decimal  AmountCollected { get; set; }
 }

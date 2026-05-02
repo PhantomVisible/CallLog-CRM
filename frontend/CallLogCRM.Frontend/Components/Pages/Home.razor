@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject ApiService ApiService
 @inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthProvider
 
 <PageTitle>CallLog CRM</PageTitle>
 
@@ -134,16 +135,23 @@
                                             <span class="outcome-badge @OutcomeCss(log.Outcome)">
                                                 @FormatOutcome(log.Outcome)
                                             </span>
+                                            @if (!string.IsNullOrWhiteSpace(log.Notes))
+                                            {
+                                                <div class="text-muted" style="font-size:.7rem">@log.Notes</div>
+                                            }
                                         </td>
                                         <td class="text-muted small">
                                             @log.CreatedAt.ToLocalTime().ToString("dd MMM, HH:mm")
                                         </td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-secondary border-0"
-                                                    @onclick="() => EditCallLog(log.Id)"
-                                                    title="Modifier l'entrée">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </button>
+                                            @if (log.Id != Guid.Empty)
+                                            {
+                                                <button class="btn btn-sm btn-outline-secondary border-0"
+                                                        @onclick="() => EditCallLog(log.Id)"
+                                                        title="Modifier l'entrée">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                            }
                                         </td>
                                     </tr>
                                 }
@@ -163,7 +171,16 @@
     private bool                  _loading      = true;
     private string?               _error;
 
-    protected override async Task OnInitializedAsync() => await LoadAll();
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthProvider.GetAuthenticationStateAsync();
+        if (state.User.IsInRole("Admin"))
+        {
+            Nav.NavigateTo("/admin", replace: true);
+            return;
+        }
+        await LoadAll();
+    }
 
     private async Task LoadAll()
     {
@@ -171,8 +188,35 @@
         _error   = null;
         try
         {
-            _reservations = await ApiService.GetMyReservationsAsync();
-            _logs         = await ApiService.GetMyCallLogsAsync();
+            var allReservations = await ApiService.GetMyReservationsAsync();
+            var actualLogs      = await ApiService.GetMyCallLogsAsync();
+
+            // Queue: only reservations that have no status yet (closer hasn't touched them).
+            _reservations = allReservations
+                .Where(r => string.IsNullOrWhiteSpace(r.CurrentStatus))
+                .ToList();
+
+            // Sheet-only updates: reservations WITH a status but NO matching call log entry.
+            // Matched by phone number since CallLog has no ReservationId FK on the frontend.
+            var sheetUpdates = allReservations
+                .Where(r => !string.IsNullOrWhiteSpace(r.CurrentStatus)
+                         && !actualLogs.Any(c => c.PhoneNumber == r.PhoneNumber))
+                .Select(r => new CallLog
+                {
+                    Id           = Guid.Empty,
+                    CustomerName = r.CustomerName,
+                    PhoneNumber  = r.PhoneNumber,
+                    Outcome      = r.CurrentStatus!,
+                    Notes        = "Mis à jour via Google Sheets",
+                    CreatedAt    = r.AppointmentDate == DateTime.MinValue
+                                       ? DateTime.UtcNow
+                                       : r.AppointmentDate
+                });
+
+            _logs = actualLogs
+                .Concat(sheetUpdates)
+                .OrderByDescending(l => l.CreatedAt)
+                .ToList();
         }
         catch (Exception ex)
         {

@@ -16,7 +16,6 @@
     }
     else if (_step == 1)
     {
-        <span class="step-badge">Étape 1 sur 3</span>
         <p class="call-question">Qui appelez-vous ?</p>
 
         <div class="mb-3">
@@ -61,8 +60,7 @@
 
     else if (_step == 2)
     {
-        <span class="step-badge">Étape 2 sur 3</span>
-        <p class="call-question">@_customerName a répondu ?</p>
+        <p class="call-question">@CurrentPhaseTitle</p>
 
         @if (_scriptPhase == 1)
         {
@@ -125,11 +123,11 @@
                     Oui - la cliente souhaite continuer
                 </button>
                 <button class="btn btn-warning flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
+                        @onclick='() => TriggerEarlyExit("R2")'>
                     Non - la cliente n'a pas le temps (reporté)
                 </button>
                 <button class="btn btn-danger flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
+                        @onclick='() => TriggerEarlyExit("Annulation")'>
                     La cliente n'est plus intéressée
                 </button>
             </div>
@@ -191,12 +189,8 @@
                         @onclick="DouleurIdentifiee">
                     Douleur identifiée — Passer à la suite
                 </button>
-                <button class="btn btn-warning flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
-                    Objection bloquante
-                </button>
                 <button class="btn btn-danger flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
+                        @onclick='() => TriggerEarlyExit("Annulation")'>
                     Disqualifiée — Pas de réel problème
                 </button>
             </div>
@@ -248,12 +242,8 @@
                         @onclick="ProspectQualifie">
                     Oui — Qualifiée (Passer à la suite)
                 </button>
-                <button class="btn btn-warning flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
-                    Objection bloquante
-                </button>
                 <button class="btn btn-danger flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
+                        @onclick='() => TriggerEarlyExit("Annulation")'>
                     Non — DISQUALIFIÉE (Pas de budget)
                 </button>
             </div>
@@ -321,12 +311,8 @@
                         @onclick="PriseDeConscienceValidee">
                     Validé — suivant
                 </button>
-                <button class="btn btn-warning flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
-                    Objection bloquante
-                </button>
                 <button class="btn btn-danger flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
+                        @onclick='() => TriggerEarlyExit("Annulation")'>
                     Disqualifiée
                 </button>
             </div>
@@ -369,12 +355,8 @@
                         @onclick="PresenterOffre">
                     Validé — Présenter l'offre
                 </button>
-                <button class="btn btn-warning flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
-                    Objection bloquante
-                </button>
                 <button class="btn btn-danger flex-fill" disabled="@_submitting"
-                        @onclick='() => Submit("Answered_NotAvailable")'>
+                        @onclick='() => TriggerEarlyExit("Annulation")'>
                     Disqualifiée
                 </button>
             </div>
@@ -638,17 +620,40 @@
             </div>
 
             <div class="mt-4">
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label class="form-label fw-bold text-success">
+                            <i class="bi bi-currency-euro me-1"></i>Chiffre d'Affaires Total (€)
+                        </label>
+                        <input type="number" step="0.01" min="0"
+                               class="form-control border-success shadow-sm"
+                               placeholder="Ex: 2500"
+                               @bind="_revenue" />
+                        <div class="form-text text-muted small">Le montant total de la vente.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-success">
+                            <i class="bi bi-cash-coin me-1"></i>Cash Collecté Aujourd'hui (€)
+                        </label>
+                        <input type="number" step="0.01" min="0"
+                               class="form-control border-success shadow-sm"
+                               placeholder="Ex: 500"
+                               @bind="_amountCollected" />
+                        <div class="form-text text-muted small">Ce qui a été réellement encaissé au téléphone.</div>
+                    </div>
+                </div>
+
                 <label class="form-label fw-bold text-success">
-                    Notes d'encaissement (Obligatoire) :
+                    <i class="bi bi-pencil-square me-2"></i>Notes sur le paiement (Obligatoire) :
                 </label>
                 <textarea class="form-control mb-3 border-success shadow-sm" rows="2"
-                          placeholder="Ex: La cliente a choisi le paiement en 4x, validé sur Systeme.io..."
+                          placeholder="Ex: Acompte de 500€ payé via Stripe, reste à payer le 15..."
                           @bind="_paymentNotes" @bind:event="oninput"></textarea>
 
                 <button class="btn btn-success btn-lg w-100 fw-bold shadow"
                         disabled="@(string.IsNullOrWhiteSpace(_paymentNotes) || _submitting)"
-                        @onclick='() => Submit("Answered_Available")'>
-                    Terminer l'appel et Sauvegarder la Vente
+                        @onclick='() => Submit("Answered_Available", notes: _paymentNotes, revenue: _revenue, amountCollected: _amountCollected)'>
+                    <i class="bi bi-check-circle-fill me-2"></i> Terminer l'appel et Sauvegarder (Vente)
                 </button>
             </div>
 
@@ -669,14 +674,22 @@
 
                     <p><strong>(Vous) :</strong> - Écoute <strong>@_customerName</strong>, j'entends que tu n'as pas les moyens de financer ton accompagnement aujourd'hui, ou que ce n'est pas le bon moment pour toi. Dans ce cas, tu ne peux pas rentrer dans le programme.</p>
                     <p><strong>(Vous) :</strong> - Je te souhaite quand même une excellente continuation et beaucoup de réussite dans tes projets futurs. Au revoir !</p>
-
-                    <hr class="my-4" />
-
-                    <button class="btn btn-danger btn-lg w-100 fw-bold shadow" disabled="@_submitting"
-                            @onclick='() => Submit("Answered_NotAvailable")'>
-                        Terminer l'appel et Sauvegarder (Pas de Vente)
-                    </button>
                 </div>
+            </div>
+
+            <div class="mt-4">
+                <label class="form-label fw-bold text-danger">
+                    <i class="bi bi-pencil-square me-2"></i>Raison du refus (Obligatoire) :
+                </label>
+                <textarea class="form-control mb-3 border-danger shadow-sm" rows="2"
+                          placeholder="Ex: La cliente n'a pas pu obtenir de financement par son mari..."
+                          @bind="_refusalNotes" @bind:event="oninput"></textarea>
+
+                <button class="btn btn-danger btn-lg w-100 fw-bold shadow"
+                        disabled="@(string.IsNullOrWhiteSpace(_refusalNotes) || _submitting)"
+                        @onclick='() => SaveAndEndCall("Pas de vente")'>
+                    <i class="bi bi-calendar-x me-2"></i> Terminer l'appel et Sauvegarder (Pas de Vente)
+                </button>
             </div>
 
             <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 7'>
@@ -714,11 +727,44 @@
                 ← Retour
             </button>
         }
+        else if (_scriptPhase == 11)
+        {
+            <div class="card shadow-lg border-secondary mb-4">
+                <div class="card-body script-box">
+                    <h4 class="text-secondary fw-bold mb-3">
+                        <i class="bi bi-stop-circle me-2"></i> FIN PRÉMATURÉE DE L'APPEL
+                    </h4>
+
+                    <div class="alert @(_pendingStatus == "R2" ? "alert-warning" : "alert-danger") shadow-sm mb-0">
+                        <h6 class="fw-bold mb-1">Statut sélectionné : @_pendingStatus</h6>
+                        <p class="mb-0">L'appel s'est terminé plus tôt que prévu. Veuillez indiquer la raison exacte avant de sauvegarder.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label class="form-label fw-bold">
+                    <i class="bi bi-pencil-square me-2"></i>Notes (Obligatoire) :
+                </label>
+                <textarea class="form-control mb-3 shadow-sm border-secondary" rows="3"
+                          placeholder="Ex: La cliente était en voiture, rappel prévu demain..."
+                          @bind="_earlyExitNotes" @bind:event="oninput"></textarea>
+
+                <button class="btn @(_pendingStatus == "R2" ? "btn-warning" : "btn-danger") btn-lg w-100 fw-bold shadow"
+                        disabled="@(string.IsNullOrWhiteSpace(_earlyExitNotes) || _submitting)"
+                        @onclick='() => SaveAndEndCall(_pendingStatus)'>
+                    <i class="bi bi-cloud-arrow-up-fill me-2"></i> Sauvegarder et Terminer (@_pendingStatus)
+                </button>
+            </div>
+
+            <button class="btn btn-link btn-back d-block mt-2" @onclick='() => _scriptPhase = 2'>
+                ← Retour
+            </button>
+        }
     }
 
     else if (_step == 3 && _answered == true)
     {
-        <span class="step-badge">Étape 3 sur 3</span>
         <p class="call-question">Comment s'est passé l'appel ?</p>
 
         <button class="btn btn-success btn-action" disabled="@_submitting"
@@ -737,7 +783,6 @@
 
     else if (_step == 3 && _answered == false)
     {
-        <span class="step-badge">Étape 3 sur 3</span>
         <p class="call-question">Que s'est-il passé ?</p>
 
         <button class="btn btn-primary btn-action" disabled="@_submitting"
@@ -788,6 +833,11 @@
     private string? _notesFaits;
     private string? _notesEmotions;
     private string? _paymentNotes;
+    private string? _refusalNotes;
+    private string? _earlyExitNotes;
+    private decimal _revenue         = 0;
+    private decimal _amountCollected = 0;
+    private string  _pendingStatus  = string.Empty;
     private string? _callStatus;
     private string  _activeObjection     = string.Empty;
     private string? _validationError;
@@ -847,11 +897,36 @@
     private void ProspectNaPasRepondu()       => _scriptPhase = 10;
     private void ShowObjection(string key)    => _activeObjection = key;
 
+    private void TriggerEarlyExit(string status)
+    {
+        _pendingStatus = status;
+        _scriptPhase   = 11;
+    }
+
+    private string CurrentPhaseTitle => _scriptPhase switch
+    {
+        1  => $"{_customerName} a répondu ?",
+        2  => "Lancement de l'Appel",
+        3  => "Phase de Découverte (Les 3 Piliers)",
+        4  => "La Transition",
+        5  => "Prise de Conscience & Récapitulatif",
+        6  => "État d'Esprit Entrepreneur",
+        7  => "L'Offre & Le Prix (Le Closing)",
+        8  => "Encaissement du Client",
+        9  => "Refus Définitif",
+        10 => "Appel Sans Réponse (Suivi)",
+        11 => "Fin Prématurée de l'Appel",
+        _  => "Appel en cours…"
+    };
+
     private async Task SaveAndEndCall(string status)
     {
         _callStatus = status;
-        // TODO: persist _callStatus alongside the call log.
-        await Submit("NotAnswered_NoVoicemail");
+        var notes = !string.IsNullOrWhiteSpace(_earlyExitNotes) ? _earlyExitNotes
+                  : !string.IsNullOrWhiteSpace(_refusalNotes)   ? _refusalNotes
+                  : !string.IsNullOrWhiteSpace(_paymentNotes)   ? _paymentNotes
+                  : status;
+        await Submit("NotAnswered_NoVoicemail", notes: notes);
     }
 
     private void GoToStep3(bool answered)
@@ -860,7 +935,7 @@
         _step = 3;
     }
 
-    private async Task Submit(string outcome)
+    private async Task Submit(string outcome, string? notes = null, decimal revenue = 0, decimal amountCollected = 0)
     {
         _submitting = true;
         _error      = null;
@@ -868,9 +943,12 @@
         {
             var success = await ApiService.CreateCallLogAsync(new CreateCallLogRequest
             {
-                CustomerName = _customerName,
-                PhoneNumber  = _phoneNumber,
-                Outcome      = outcome
+                CustomerName    = _customerName,
+                PhoneNumber     = _phoneNumber,
+                Outcome         = outcome,
+                Notes           = notes,
+                Revenue         = revenue,
+                AmountCollected = amountCollected
             });
 
             if (success)

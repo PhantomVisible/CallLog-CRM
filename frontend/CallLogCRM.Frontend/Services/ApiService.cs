@@ -67,6 +67,28 @@ public class ApiService
 
     // ── Call Logs ─────────────────────────────────────────
 
+    // GET /api/reservations/all — all reservations with CloserName, admin only.
+    public async Task<List<AdminReservation>> GetAdminReservationsAsync()
+    {
+        await AttachTokenAsync();
+        var response = await _http.GetAsync("api/reservations/all");
+        if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+            throw new UnauthorizedAccessException("Accès refusé — token sans rôle Admin.");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<AdminReservation>>() ?? [];
+    }
+
+    // GET /api/calllogs/admin — all logs with CloserName, admin only.
+    public async Task<List<AdminCallLog>> GetAdminCallLogsAsync()
+    {
+        await AttachTokenAsync();
+        var response = await _http.GetAsync("api/calllogs/admin");
+        if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+            throw new UnauthorizedAccessException("Accès refusé — token sans rôle Admin.");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<AdminCallLog>>() ?? [];
+    }
+
     // GET /api/calllogs
     public async Task<List<CallLog>> GetCallLogsAsync()
     {

@@ -19,5 +19,8 @@ public class CallReservation
     // Examples: "Vente", "Pas de vente", "RDV confirmé", etc. Null = not yet set.
     public string?  CurrentStatus   { get; set; }
 
+    // Call notes written by the closeuse, synced from column I of the sheet.
+    public string?  Notes           { get; set; }
+
     public User User { get; set; } = null!;
 }

@@ -17,22 +17,16 @@ public sealed class GoogleSheetsWritebackService(
     private readonly string _credentialsPath = config["GoogleSheets:CredentialsPath"] ?? "google-credentials.json";
 
     /// <inheritdoc />
-    public async Task UpdateCallStatusAsync(string phoneNumber, string email, string status)
+    public async Task UpdateCallStatusAsync(string phoneNumber, string email, string status, string? notes)
     {
         try
         {
             var sheetsService = await CreateSheetsServiceAsync();
 
-            // 1. Fetch all rows to find the one matching this phone/email.
-            var getRequest = sheetsService.Spreadsheets.Values.Get(_spreadsheetId, "A2:G");
+            // 1. Fetch all rows — range A2:H captures all data columns including Statut Call.
+            var getRequest = sheetsService.Spreadsheets.Values.Get(_spreadsheetId, "A2:H");
             var getResponse = await getRequest.ExecuteAsync();
             var rows = getResponse.Values;
-
-            if (rows is null || rows.Count == 0)
-            {
-                logger.LogWarning("Sheet is empty — cannot write back status for email={Email}.", email);
-                return;
-            }
 
             if (string.IsNullOrWhiteSpace(email))
             {
@@ -40,19 +34,43 @@ public sealed class GoogleSheetsWritebackService(
                 return;
             }
 
+            if (rows is null || rows.Count == 0)
+            {
+                logger.LogWarning("Sheet is empty — cannot write back status for email={Email}.", email);
+                return;
+            }
+
             // 2. Find the matching row index (0-based within the fetched data, so +2 for the sheet row).
-            //    Column layout (A2:G): [0]=Source [1]=Nom [2]=Email [3]=Telephone [4]=unused [5]=Date [6]=Closer
-            //    Matching exclusively on Email (col C, index 2) — phone is unreliable ("Inconnu" fallback).
+            //    Actual column layout (A2:H):
+            //      [0]=A(leading) [1]=Source [2]=Nom [3]=Email [4]=Telephone [5]=unused [6]=Date [7]=Closer
+            //    Email is Column D = index 3.
+            const int emailColumnIndex = 3;
+
+            // Aggressively strip invisible characters that can survive a copy-paste from Sheets.
+            var targetEmail = email.Replace("\r", "").Replace("\n", "").Trim();
+
+            logger.LogInformation("Writeback search starting — target email=[{Target}], {Count} rows fetched.",
+                targetEmail, rows.Count);
+
             int? matchedRowIndex = null;
-            var targetEmail = email.Trim();
             for (var i = 0; i < rows.Count; i++)
             {
-                if (rows[i].Count < 3) continue;
-
-                var rowEmail = rows[i][2]?.ToString()?.Trim() ?? string.Empty;
-
-                if (rowEmail.Equals(targetEmail, StringComparison.OrdinalIgnoreCase))
+                if (rows[i].Count <= emailColumnIndex)
                 {
+                    logger.LogDebug("Row {I} skipped — only {Cols} column(s).", i, rows[i].Count);
+                    continue;
+                }
+
+                var rawCell   = rows[i][emailColumnIndex]?.ToString() ?? string.Empty;
+                var sheetEmail = rawCell.Replace("\r", "").Replace("\n", "").Trim();
+
+                logger.LogDebug("Row {I}: sheet=[{SheetEmail}] target=[{TargetEmail}]",
+                    i, sheetEmail, targetEmail);
+
+                if (sheetEmail.Equals(targetEmail, StringComparison.OrdinalIgnoreCase))
+                {
+                    logger.LogInformation("Writeback match found at row {I} (sheet row {SheetRow}).",
+                        i, i + 2);
                     matchedRowIndex = i;
                     break;
                 }
@@ -61,18 +79,18 @@ public sealed class GoogleSheetsWritebackService(
             if (matchedRowIndex is null)
             {
                 logger.LogWarning(
-                    "No matching row found in sheet for email={Email}.", email);
+                    "Writeback FAILED — no row matched email=[{Email}].", targetEmail);
                 return;
             }
 
-            // 3. Write the status into column G (index 6) of the matched row.
+            // 3. Write status → column H and notes → column I of the matched row.
             //    Sheet rows are 1-indexed and we skip the header row, so: sheetRow = matchedRowIndex + 2.
-            var sheetRow = matchedRowIndex.Value + 2;
-            var updateRange = $"G{sheetRow}";
+            var sheetRow    = matchedRowIndex.Value + 2;
+            var updateRange = $"H{sheetRow}:I{sheetRow}";
 
             var valueRange = new ValueRange
             {
-                Values = [[status]]
+                Values = [[(object)status, notes ?? ""]]
             };
 
             var updateRequest = sheetsService.Spreadsheets.Values.Update(
@@ -80,11 +98,15 @@ public sealed class GoogleSheetsWritebackService(
             updateRequest.ValueInputOption =
                 SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
 
+            logger.LogInformation(
+                "Attempting to write Status=[{Status}] Notes=[{Notes}] to {Range}.",
+                status, notes, updateRange);
+
             await updateRequest.ExecuteAsync();
 
             logger.LogInformation(
-                "Updated sheet row {Row} (email={Email}) with status '{Status}'.",
-                sheetRow, email, status);
+                "Successfully updated {Range} (email={Email}).",
+                updateRange, email);
         }
         catch (Exception ex)
         {

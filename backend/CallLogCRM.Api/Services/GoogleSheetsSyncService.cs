@@ -35,7 +35,7 @@ public sealed class GoogleSheetsSyncService : BackgroundService
         _services            = services;
         _logger              = logger;
         _spreadsheetId       = config["GoogleSheets:SpreadsheetId"] ?? string.Empty;
-        _range               = config["GoogleSheets:Range"]         ?? "A2:G";
+        _range               = config["GoogleSheets:Range"]         ?? "A2:I";
         _credentialsPath     = config["GoogleSheets:CredentialsPath"] ?? "google-credentials.json";
         _syncIntervalMinutes = int.TryParse(config["GoogleSheets:SyncIntervalMinutes"], out var m) ? m : 720;
     }
@@ -203,6 +203,8 @@ public sealed class GoogleSheetsSyncService : BackgroundService
             var closerName   = Cell(o + 5);     // Col G: Closer name
             var rawStatus    = Cell(o + 6);     // Col H: Statut Call
             var currentStatus = string.IsNullOrWhiteSpace(rawStatus) ? null : rawStatus;
+            var rawNotes     = Cell(o + 7);     // Col I: Call notes written by closer
+            var sheetNotes   = string.IsNullOrWhiteSpace(rawNotes)   ? null : rawNotes;
 
             _logger.LogDebug(
                 "Row [cols={Count} offset={O}] name='{Name}' phone='{Phone}' closer='{Closer}' status='{Status}'",
@@ -243,7 +245,8 @@ public sealed class GoogleSheetsSyncService : BackgroundService
                 Email           = email,
                 AppointmentDate = appointmentDate,
                 Source          = string.IsNullOrEmpty(source) ? "N/A" : source,
-                CurrentStatus   = currentStatus
+                CurrentStatus   = currentStatus,
+                Notes           = sheetNotes
             });
         }
 

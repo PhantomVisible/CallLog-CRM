@@ -20,10 +20,13 @@ public class CallLog
     // is used to stamp the closer's identity on every call log.
     public Guid?       UserId       { get; set; }
 
-    public string      CustomerName { get; set; } = string.Empty;
-    public string      PhoneNumber  { get; set; } = string.Empty;
-    public CallOutcome Outcome      { get; set; }
-    public DateTime    CreatedAt    { get; set; } = DateTime.UtcNow;
+    public string      CustomerName    { get; set; } = string.Empty;
+    public string      PhoneNumber     { get; set; } = string.Empty;
+    public CallOutcome Outcome         { get; set; }
+    public string?     Notes           { get; set; }
+    public decimal     Revenue         { get; set; }
+    public decimal     AmountCollected { get; set; }
+    public DateTime    CreatedAt       { get; set; } = DateTime.UtcNow;
 
     public User?       User         { get; set; }
 }

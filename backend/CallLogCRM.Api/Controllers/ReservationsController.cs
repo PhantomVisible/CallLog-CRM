@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CallLogCRM.Api.Data;
+using CallLogCRM.Api.DTOs;
 using CallLogCRM.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,34 @@ public class ReservationsController(AppDbContext db) : ControllerBase
         var reservations = await db.CallReservations
             .Where(r => r.AssignedUserId == userId && r.CurrentStatus != "Traité")
             .OrderByDescending(r => r.AppointmentDate)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return Ok(reservations);
+    }
+
+    // GET /api/reservations/all
+    // Returns every reservation with its assigned closer's name — admin dashboard only.
+    [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(IEnumerable<ReservationAdminDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllReservations()
+    {
+        var reservations = await db.CallReservations
+            .Include(r => r.User)
+            .OrderByDescending(r => r.AppointmentDate)
+            .Select(r => new ReservationAdminDto
+            {
+                Id              = r.Id,
+                CloserName      = r.User.CloserName,
+                CustomerName    = r.CustomerName,
+                PhoneNumber     = r.PhoneNumber,
+                Email           = r.Email,
+                AppointmentDate = r.AppointmentDate,
+                Source          = r.Source,
+                CurrentStatus   = r.CurrentStatus,
+                Notes           = r.Notes
+            })
             .AsNoTracking()
             .ToListAsync();
 

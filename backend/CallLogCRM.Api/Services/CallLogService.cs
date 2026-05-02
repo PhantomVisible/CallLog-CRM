@@ -11,14 +11,17 @@ public class CallLogService(
     ISmsService sms,
     IGoogleSheetsWritebackService sheetsWriteback) : ICallLogService
 {
-    public async Task<CallLog> CreateCallLogAsync(CreateCallLogDto dto, Guid userId)
+    public async Task<CallLog> CreateCallLogAsync(CreateCallLogDto dto, Guid userId, string? notes = null)
     {
         var log = new CallLog
         {
-            UserId       = userId,
-            CustomerName = dto.CustomerName,
-            PhoneNumber  = dto.PhoneNumber,
-            Outcome      = dto.Outcome
+            UserId          = userId,
+            CustomerName    = dto.CustomerName,
+            PhoneNumber     = dto.PhoneNumber,
+            Outcome         = dto.Outcome,
+            Notes           = notes,
+            Revenue         = dto.Revenue,
+            AmountCollected = dto.AmountCollected
         };
 
         db.CallLogs.Add(log);
@@ -45,7 +48,7 @@ public class CallLogService(
 
         // Fire-and-forget style: the writeback service catches its own exceptions
         // so it never breaks the main call-log flow.
-        _ = sheetsWriteback.UpdateCallStatusAsync(dto.PhoneNumber, email, statusText);
+        _ = sheetsWriteback.UpdateCallStatusAsync(dto.PhoneNumber, email, statusText, notes);
 
         return log;
     }
@@ -53,6 +56,24 @@ public class CallLogService(
     public async Task<IEnumerable<CallLog>> GetAllCallLogsAsync()
         => await db.CallLogs
                    .OrderByDescending(l => l.CreatedAt)
+                   .ToListAsync();
+
+    public async Task<IEnumerable<CallLogAdminDto>> GetAdminCallLogsAsync()
+        => await db.CallLogs
+                   .Include(l => l.User)
+                   .OrderByDescending(l => l.CreatedAt)
+                   .Select(l => new CallLogAdminDto
+                   {
+                       Id              = l.Id,
+                       CloserName      = l.User != null ? l.User.CloserName : "Inconnu",
+                       CustomerName    = l.CustomerName,
+                       PhoneNumber     = l.PhoneNumber,
+                       Outcome         = l.Outcome.ToString(),
+                       Notes           = l.Notes,
+                       Revenue         = l.Revenue,
+                       AmountCollected = l.AmountCollected,
+                       CreatedAt       = l.CreatedAt
+                   })
                    .ToListAsync();
 
     public async Task<IEnumerable<CallLog>> GetMyCallLogsAsync(Guid userId)
