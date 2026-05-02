@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CallLogCRM.Frontend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bcc2e41b3648c55d96a158a361faffd97aeb0e6d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e1848c32100d290d6f6b54fdd5827e0a83728a24")]
 [assembly: System.Reflection.AssemblyProductAttribute("CallLogCRM.Frontend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CallLogCRM.Frontend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
